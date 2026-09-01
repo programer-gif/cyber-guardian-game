@@ -1,0 +1,33 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "leaderboard": {
+      ".read": true,
+      ".write": "auth != null",
+      "$entryId": {
+        ".write": "auth != null || (!data.exists() && newData.hasChildren(['name','xp','time','status']))"
+      }
+    },
+
+    "saves": {
+      "$uuid": {
+        ".read": true,
+        ".write": true
+      }
+    },
+
+    "coop_rooms": {
+      "$code": {
+        ".read": true,
+        ".write": true
+      }
+    },
+
+    "quiz": {
+      ".read": true,
+      ".write": "auth != null"
+    }
+  }
+}

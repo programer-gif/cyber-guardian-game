@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Cyber Guardian</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<style>
+  body{margin:0;min-height:100vh;background:#0A0A0A;font-family:'Courier New',Consolas,monospace;color:#EAF6FF;}
+  .wrap{max-width:820px;margin:0 auto;padding:30px 20px;}
+  .card{background:#0d1117;border:1px solid rgba(0,229,255,.35);padding:24px 28px;margin-bottom:20px;box-shadow:0 0 30px rgba(0,229,255,.08);}
+  h1{color:#00E5FF;letter-spacing:2px;font-size:20px;}
+  h2{color:#00E5FF;font-size:15px;letter-spacing:1px;}
+  input,select,textarea{width:100%;padding:9px 10px;background:#050708;border:1px solid rgba(0,229,255,.35);color:#EAF6FF;
+    font-family:inherit;font-size:14px;margin-bottom:10px;box-sizing:border-box;}
+  textarea{min-height:70px;resize:vertical;}
+  button{padding:9px 16px;background:transparent;border:1px solid #00E5FF;color:#00E5FF;
+    font-family:inherit;letter-spacing:1px;cursor:pointer;margin-right:8px;}
+  button:hover{background:rgba(0,229,255,.12);}
+  button.danger{border-color:#FF3860;color:#FF3860;}
+  button.danger:hover{background:rgba(255,56,96,.12);}
+  .row{display:flex;gap:10px;flex-wrap:wrap;}
+  .row>*{flex:1;min-width:140px;}
+  .qitem{border:1px solid rgba(255,255,255,.12);padding:12px;margin-bottom:10px;}
+  .qitem .meta{opacity:.6;font-size:12px;margin-bottom:6px;}
+  .err{color:#FF3860;font-size:13px;}
+  .ok{color:#3ddc84;font-size:13px;}
+  .hidden{display:none;}
+  label{font-size:12px;opacity:.7;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>ADMIN — CYBER GUARDIAN</h1>
+
+  <div id="loginCard" class="card">
+    <h2>LOGIN</h2>
+    <input id="loginEmail" type="email" placeholder="Email admin" autocomplete="username">
+    <input id="loginPassword" type="password" placeholder="Password admin" autocomplete="current-password">
+    <button onclick="doLogin()">MASUK</button>
+    <div id="loginMsg"></div>
+    <p style="font-size:12px;opacity:.6;margin-top:14px;">
+      Akun admin dibuat manual di Firebase Console → Authentication → Add user.
+      Lihat README.md bagian "Setup Firebase".
+    </p>
+  </div>
+
+  <div id="panel" class="card hidden">
+    <div class="row" style="justify-content:space-between;align-items:center;">
+      <span>Login sebagai: <b id="whoAmI"></b></span>
+      <button onclick="doLogout()">LOGOUT</button>
+    </div>
+  </div>
+
+  <div id="lbCard" class="card hidden">
+    <h2>LEADERBOARD</h2>
+    <button class="danger" onclick="resetLeaderboard()">RESET LEADERBOARD</button>
+    <div id="lbMsg"></div>
+  </div>
+
+  <div id="quizCard" class="card hidden">
+    <h2>TAMBAH / GANTI SOAL</h2>
+    <div class="row">
+      <div>
+        <label>Ruangan</label>
+        <select id="qStation">
+          <option value="itsupport">Helpdesk</option>
+          <option value="programmer">Programmer</option>
+          <option value="network">Network</option>
+          <option value="server">Server</option>
+          <option value="cctv">CCTV</option>
+          <option value="datacenter">Data Center</option>
+          <option value="manager">Manager</option>
+        </select>
+      </div>
+      <div>
+        <label>Ganti misi bawaan? (kosongkan = misi baru)</label>
+        <select id="qReplace">
+          <option value="">-- Misi baru --</option>
+          <option value="phishing">Email Phishing (Helpdesk)</option>
+          <option value="sms">SMS Penipuan (Helpdesk)</option>
+          <option value="motherscam">Penipuan Bank/CS (Helpdesk)</option>
+          <option value="update">Update Software (Programmer)</option>
+          <option value="internetdown">Internet Mati (Network)</option>
+          <option value="overheat">Server Overheat (Server)</option>
+          <option value="backup">Backup Data (Server)</option>
+          <option value="camera">Kamera Offline (CCTV)</option>
+          <option value="review">Review CCTV (CCTV)</option>
+          <option value="storage">Storage Hampir Penuh (Data Center)</option>
+          <option value="restore">Restore Backup (Data Center)</option>
+        </select>
+      </div>
+    </div>
+    <input id="qLabel" placeholder="Nama misi (contoh: Email Phishing Baru)">
+    <textarea id="qQuestion" placeholder="Pertanyaan kuis"></textarea>
+    <div class="row">
+      <input id="qOpt1" placeholder="Pilihan 1">
+      <input id="qOpt2" placeholder="Pilihan 2">
+    </div>
+    <div class="row">
+      <input id="qOpt3" placeholder="Pilihan 3 (opsional)">
+      <input id="qOpt4" placeholder="Pilihan 4 (opsional)">
+    </div>
+    <div class="row">
+      <div>
+        <label>Nomor pilihan benar (1-4)</label>
+        <input id="qCorrect" type="number" min="1" max="4" value="1">
+      </div>
+      <div>
+        <label>XP</label>
+        <input id="qXp" type="number" value="80">
+      </div>
+      <div>
+        <label>Coin</label>
+        <input id="qCoin" type="number" value="15">
+      </div>
+    </div>
+    <button onclick="addQuestion()">SIMPAN SOAL</button>
+    <div id="qMsg"></div>
+
+    <h2 style="margin-top:24px;">SOAL TERSIMPAN</h2>
+    <div id="qList"></div>
+  </div>
+</div>
+
+<script>
+let auth, db;
+function init(){
+  if (typeof firebase === 'undefined' || !firebase.apps.length){
+    document.getElementById('loginMsg').innerHTML = '<span class="err">Firebase belum dikonfigurasi. Isi firebase-config.js dulu (lihat README.md).</span>';
+    return;
+  }
+  auth = firebase.auth();
+  db = firebase.database();
+  auth.onAuthStateChanged(user=>{
+    if(user){
+      document.getElementById('loginCard').classList.add('hidden');
+      document.getElementById('panel').classList.remove('hidden');
+      document.getElementById('lbCard').classList.remove('hidden');
+      document.getElementById('quizCard').classList.remove('hidden');
+      document.getElementById('whoAmI').textContent = user.email;
+      loadQuizList();
+    } else {
+      document.getElementById('loginCard').classList.remove('hidden');
+      document.getElementById('panel').classList.add('hidden');
+      document.getElementById('lbCard').classList.add('hidden');
+      document.getElementById('quizCard').classList.add('hidden');
+    }
+  });
+}
+async function doLogin(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const pw = document.getElementById('loginPassword').value;
+  const msg = document.getElementById('loginMsg');
+  msg.innerHTML = '';
+  try{
+    await auth.signInWithEmailAndPassword(email, pw);
+  }catch(e){
+    msg.innerHTML = '<span class="err">Login gagal: '+e.message+'</span>';
+  }
+}
+function doLogout(){ auth.signOut(); }
+
+async function resetLeaderboard(){
+  if(!confirm('Yakin hapus semua data leaderboard?')) return;
+  const msg = document.getElementById('lbMsg');
+  try{
+    await db.ref('leaderboard').remove();
+    msg.innerHTML = '<span class="ok">Leaderboard berhasil direset.</span>';
+  }catch(e){
+    msg.innerHTML = '<span class="err">Gagal: '+e.message+'</span>';
+  }
+}
+
+async function loadQuizList(){
+  const listEl = document.getElementById('qList');
+  listEl.innerHTML = 'Memuat...';
+  const snap = await db.ref('quiz/questions').once('value');
+  const val = snap.val() || {};
+  const entries = Object.entries(val);
+  if(!entries.length){ listEl.innerHTML = '<i style="opacity:.6;">Belum ada soal tambahan.</i>'; return; }
+  listEl.innerHTML = entries.map(([key,q])=>`
+    <div class="qitem">
+      <div class="meta">${q.station || '-'} ${q.replace_key ? '· ganti misi: '+q.replace_key : '· misi baru'}</div>
+      <div><b>${(q.category_label||'')}</b></div>
+      <div style="margin:6px 0;">${q.question||''}</div>
+      <button class="danger" onclick="deleteQuestion('${key}')">HAPUS</button>
+    </div>
+  `).join('');
+}
+
+async function addQuestion(){
+  const msg = document.getElementById('qMsg');
+  msg.innerHTML = '';
+  const station = document.getElementById('qStation').value;
+  const replace_key = document.getElementById('qReplace').value || null;
+  const category_label = document.getElementById('qLabel').value.trim();
+  const question = document.getElementById('qQuestion').value.trim();
+  const opts = [
+    document.getElementById('qOpt1').value.trim(),
+    document.getElementById('qOpt2').value.trim(),
+    document.getElementById('qOpt3').value.trim(),
+    document.getElementById('qOpt4').value.trim(),
+  ].filter(Boolean);
+  const correctIdx = parseInt(document.getElementById('qCorrect').value,10) - 1;
+  const xp = parseInt(document.getElementById('qXp').value,10) || 80;
+  const coin = parseInt(document.getElementById('qCoin').value,10) || 15;
+
+  if(!question || opts.length < 2){
+    msg.innerHTML = '<span class="err">Isi pertanyaan dan minimal 2 pilihan jawaban.</span>';
+    return;
+  }
+  const newRef = db.ref('quiz/questions').push();
+  const q = {
+    id: newRef.key, station, replace_key, category_label,
+    question, options: opts, correct: Math.max(0, Math.min(opts.length-1, correctIdx)),
+    xp, coin
+  };
+  try{
+    await newRef.set(q);
+    msg.innerHTML = '<span class="ok">Soal tersimpan.</span>';
+    loadQuizList();
+  }catch(e){
+    msg.innerHTML = '<span class="err">Gagal simpan: '+e.message+'</span>';
+  }
+}
+async function deleteQuestion(key){
+  if(!confirm('Hapus soal ini?')) return;
+  await db.ref('quiz/questions/'+key).remove();
+  loadQuizList();
+}
+init();
+</script>
+</body>
+</html>
