@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>CYBER GUARDIAN</title>
+<style>
+:root{
+  --neon-blue:#00E5FF;
+  --matrix-green:#00FF88;
+  --bg-black:#0A0A0A;
+  --text-white:#EAF6FF;
+  --neon-purple:#B026FF;
+  --warn-red:#FF3860;
+  --panel:#0d1117;
+  --panel-2:#121826;
+  --border:rgba(0,229,255,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{
+  width:100%;height:100%;background:var(--bg-black);
+  font-family:'Courier New',Consolas,monospace;color:var(--text-white);
+  overflow:hidden;
+}
+#app{position:relative;width:100vw;height:100vh;background:var(--bg-black);}
+.scene{
+  position:absolute;inset:0;display:none;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  overflow:hidden;
+}
+.scene.active{display:flex;}
+
+/* ---------- rain canvas shared bg ---------- */
+#rainCanvas{position:absolute;inset:0;width:100%;height:100%;opacity:.35;pointer-events:none;}
+
+/* ---------- scanline overlay ---------- */
+.scanlines::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0,rgba(0,0,0,0) 2px,rgba(0,229,255,.03) 3px,rgba(0,0,0,0) 4px);
+  mix-blend-mode:screen;
+}
+
+/* ---------- boot ---------- */
+#scene-boot .bootline{font-size:clamp(18px,3vw,26px);letter-spacing:4px;color:var(--matrix-green);text-shadow:0 0 8px var(--matrix-green);margin-bottom:26px;}
+.barwrap{width:min(70vw,520px);height:22px;border:2px solid var(--matrix-green);border-radius:2px;position:relative;overflow:hidden;box-shadow:0 0 14px rgba(0,255,136,.4);}
+.barfill{height:100%;width:0%;background:linear-gradient(90deg,var(--matrix-green),var(--neon-blue));transition:width .35s linear;}
+.barpct{margin-top:12px;font-size:15px;color:var(--neon-blue);letter-spacing:2px;}
+.flicker{animation:flick .08s steps(1) 2;}
+@keyframes flick{0%{opacity:1;}50%{opacity:.15;}100%{opacity:1;}}
+
+/* ---------- terminal ---------- */
+#scene-terminal{align-items:flex-start;justify-content:flex-start;padding:8vh 8vw;}
+.termbox{width:100%;max-width:640px;text-align:left;}
+.termhead{color:var(--neon-blue);font-size:14px;letter-spacing:2px;border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:18px;}
+.termrow{margin-bottom:16px;}
+.termlabel{font-size:13px;color:var(--text-white);letter-spacing:2px;margin-bottom:6px;opacity:.85;}
+.termbar{height:14px;background:#111;border:1px solid var(--border);position:relative;overflow:hidden;}
+.termbar > div{height:100%;width:0%;background:var(--matrix-green);box-shadow:0 0 8px var(--matrix-green);transition:width .8s ease;}
+.termready{margin-top:10px;font-size:14px;color:var(--matrix-green);letter-spacing:3px;opacity:0;transition:opacity .5s;}
+.termready.show{opacity:1;}
+
+/* ---------- logo ---------- */
+#scene-logo .logotitle{font-size:clamp(34px,7vw,68px);font-weight:900;letter-spacing:6px;color:var(--neon-blue);text-shadow:0 0 10px var(--neon-blue),0 0 30px rgba(0,229,255,.5);position:relative;z-index:2;}
+#scene-logo .logosub{font-size:clamp(30px,7vw,68px);font-weight:900;letter-spacing:10px;color:var(--text-white);text-shadow:0 0 12px var(--neon-purple);position:relative;z-index:2;}
+.glitch{animation:glitch 2.6s infinite;}
+@keyframes glitch{
+  0%,100%{transform:translate(0,0);}
+  92%{transform:translate(0,0);}
+  93%{transform:translate(-3px,1px);text-shadow:2px 0 var(--warn-red),-2px 0 var(--neon-blue);}
+  94%{transform:translate(2px,-1px);}
+  95%{transform:translate(0,0);}
+}
+.hint{margin-top:34px;font-size:13px;color:var(--neon-blue);opacity:.75;letter-spacing:2px;position:relative;z-index:2;animation:pulse 1.6s infinite;}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:.9}}
+
+/* ---------- story ---------- */
+#scene-story .storyline{font-size:clamp(16px,3vw,26px);letter-spacing:2px;margin:10px 0;opacity:0;transform:translateY(10px);transition:opacity .8s ease,transform .8s ease;}
+#scene-story .storyline.show{opacity:1;transform:translateY(0);}
+#scene-story .accent{color:var(--neon-blue);}
+
+/* ---------- menu ---------- */
+#scene-menu{background:radial-gradient(ellipse at center, #0d1524 0%, #05070a 80%);}
+#scene-gameover{background:radial-gradient(ellipse at center, #1c0509 0%, #05070a 80%);animation:glitchbg .2s infinite;}
+.menuGrid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.06) 1px,transparent 1px);background-size:36px 36px;animation:gridmove 12s linear infinite;}
+@keyframes gridmove{from{background-position:0 0;}to{background-position:0 360px;}}
+.menuTitle{font-size:clamp(30px,6vw,56px);font-weight:900;letter-spacing:8px;color:var(--neon-blue);text-shadow:0 0 16px var(--neon-blue);z-index:2;margin-bottom:8px;}
+.menuSub{color:var(--neon-purple);letter-spacing:4px;font-size:13px;z-index:2;margin-bottom:44px;}
+.menuBtns{display:flex;flex-direction:column;gap:14px;z-index:2;}
+.cyberbtn{
+  min-width:260px;padding:12px 26px;background:rgba(13,17,23,.75);
+  border:1px solid var(--border);color:var(--text-white);font-family:inherit;
+  font-size:15px;letter-spacing:3px;cursor:pointer;position:relative;
+  transition:all .18s ease;text-align:left;
+}
+.cyberbtn:hover{border-color:var(--neon-blue);color:var(--neon-blue);box-shadow:0 0 14px rgba(0,229,255,.4);transform:translateX(4px);}
+.cyberbtn::before{content:"▶ ";color:var(--matrix-green);}
+
+/* ---------- overlays ---------- */
+.overlay{
+  position:absolute;inset:0;background:rgba(2,4,8,.88);display:none;
+  align-items:center;justify-content:center;z-index:50;
+}
+.overlay.active{display:flex;}
+.card{background:var(--panel);border:1px solid var(--border);padding:34px 38px;min-width:300px;max-width:90vw;box-shadow:0 0 30px rgba(0,229,255,.15);}
+.card h2{color:var(--neon-blue);letter-spacing:3px;font-size:18px;margin-bottom:20px;}
+.card input[type=text]{
+  width:100%;padding:10px 12px;background:#050708;border:1px solid var(--border);
+  color:var(--text-white);font-family:inherit;font-size:15px;letter-spacing:1px;margin-bottom:18px;
+}
+.card input[type=text]:focus{outline:none;border-color:var(--neon-blue);}
+.rowbtns{display:flex;gap:10px;justify-content:flex-end;}
+.smallbtn{padding:9px 18px;background:transparent;border:1px solid var(--border);color:var(--text-white);font-family:inherit;letter-spacing:2px;cursor:pointer;font-size:13px;}
+.smallbtn:hover{border-color:var(--matrix-green);color:var(--matrix-green);}
+.smallbtn.primary{border-color:var(--neon-blue);color:var(--neon-blue);}
+.smallbtn.primary:hover{background:rgba(0,229,255,.12);}
+#lbList{list-style:none;text-align:left;max-height:40vh;overflow:auto;margin-bottom:16px;min-width:280px;}
+#lbList li{display:flex;justify-content:space-between;padding:6px 4px;border-bottom:1px dashed rgba(255,255,255,.08);font-size:13px;}
+#lbList li span:first-child{color:var(--matrix-green);}
+
+/* ---------- loading ---------- */
+.loadwrap{width:min(60vw,420px);}
+.loadlabel{color:var(--neon-blue);letter-spacing:3px;font-size:14px;margin-bottom:14px;}
+
+/* ---------- intro ---------- */
+#scene-intro .introTop{font-size:clamp(15px,3vw,20px);letter-spacing:3px;margin-bottom:6px;color:var(--text-white);}
+#scene-intro .introTime{color:var(--neon-blue);font-size:14px;letter-spacing:2px;}
+.liftScene{position:relative;width:min(90vw,520px);height:300px;background:#0e1420;border:1px solid var(--border);overflow:hidden;margin-top:26px;}
+.liftDoorL,.liftDoorR{position:absolute;top:0;bottom:0;width:50%;background:linear-gradient(180deg,#232b3a,#141924);transition:transform 1.4s ease;z-index:3;}
+.liftDoorL{left:0;border-right:2px solid #000;}
+.liftDoorR{right:0;border-left:2px solid #000;}
+.liftDoorL.open{transform:translateX(-100%);}
+.liftDoorR.open{transform:translateX(100%);}
+.liftChar{position:absolute;bottom:14px;left:50%;transform:translateX(-50%) translateX(0);width:34px;height:52px;z-index:2;transition:left 1.4s ease;}
+.dialogBox{position:absolute;bottom:10px;left:10px;right:10px;background:rgba(5,7,10,.9);border:1px solid var(--border);padding:10px 14px;text-align:left;font-size:13px;line-height:1.5;opacity:0;transition:opacity .5s;z-index:4;}
+.dialogBox.show{opacity:1;}
+.introBtn{margin-top:20px;}
+
+/* ---------- game ---------- */
+#scene-game{background:#000;}
+#gameWrap{position:relative;}
+#gameCanvas{image-rendering:pixelated;border:2px solid var(--border);box-shadow:0 0 30px rgba(0,229,255,.15);}
+#hud{position:absolute;top:-46px;left:0;right:0;display:flex;justify-content:space-between;align-items:center;font-size:12px;letter-spacing:1px;color:var(--text-white);padding:0 4px;}
+#hud .hname{color:var(--neon-blue);}
+#hud .hquest{color:var(--matrix-green);}
+#xpwrap{width:140px;height:8px;background:#111;border:1px solid var(--border);margin-left:8px;display:inline-block;vertical-align:middle;}
+#xpfill{height:100%;width:0%;background:var(--neon-purple);transition:width .4s;}
+#interactPrompt{
+  position:absolute;transform:translate(-50%,-120%);background:rgba(5,7,10,.9);
+  border:1px solid var(--neon-blue);color:var(--neon-blue);padding:4px 8px;font-size:11px;
+  letter-spacing:1px;display:none;white-space:nowrap;pointer-events:none;
+}
+#toast{
+  position:absolute;top:8px;left:50%;transform:translateX(-50%) translateY(-30px);
+  background:rgba(5,7,10,.92);border:1px solid var(--matrix-green);color:var(--matrix-green);
+  padding:8px 18px;font-size:13px;letter-spacing:2px;opacity:0;transition:all .4s;pointer-events:none;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#gameHint{margin-top:14px;font-size:11px;letter-spacing:1px;color:#7f92a3;}
+
+/* ---------- minigame ---------- */
+#minigame{position:absolute;inset:0;background:rgba(2,4,8,.94);display:none;align-items:center;justify-content:center;z-index:60;flex-direction:column;}
+#minigame.active{display:flex;}
+.mgHead{margin-bottom:10px;letter-spacing:3px;font-size:16px;}
+.mgTimer{color:var(--warn-red);font-size:13px;margin-bottom:4px;letter-spacing:2px;}
+.mgScore{color:var(--matrix-green);font-size:13px;margin-bottom:16px;letter-spacing:2px;}
+.mgResult{margin-top:20px;font-size:15px;letter-spacing:2px;}
+
+/* kuis pilihan ganda (menggantikan minigame drag & drop) */
+#mgDragWrap{display:flex;flex-direction:column;align-items:center;gap:14px;width:min(600px,90vw);}
+.mgProgress{font-size:11px;color:var(--neon-purple);letter-spacing:2px;}
+.mgQBox{width:100%;}
+.mgQBox .mgQuestion{font-size:14px;line-height:1.6;margin-bottom:14px;color:var(--text-white);text-align:left;}
+#mgCards{display:flex;flex-direction:column;gap:0;width:100%;}
+#mgCards.shake{animation:mgshake .3s;}
+@keyframes mgshake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+.mgHint{font-size:10.5px;color:#7f92a3;letter-spacing:1px;text-align:center;}
+
+/* ---------- mission modal (generic) ---------- */
+#missionModal{position:absolute;inset:0;background:rgba(2,4,8,.95);display:none;align-items:center;justify-content:center;z-index:60;}
+#missionModal.active{display:flex;}
+.missionCard{background:var(--panel);border:1px solid var(--border);padding:28px 32px;width:min(560px,92vw);max-height:86vh;overflow:auto;}
+.missionRoom{color:var(--neon-purple);font-size:11px;letter-spacing:3px;margin-bottom:4px;}
+.missionTitle{color:var(--neon-blue);font-size:18px;letter-spacing:2px;margin-bottom:14px;}
+.missionBody{font-size:13px;line-height:1.7;margin-bottom:18px;}
+.missionBody .mono{background:#050708;border:1px solid var(--border);padding:10px 12px;display:block;margin:8px 0;color:var(--matrix-green);font-size:12px;white-space:pre-wrap;}
+.missionBody b{color:var(--text-white);}
+.choiceBtn{display:block;width:100%;text-align:left;padding:10px 14px;margin-bottom:8px;background:#0d1117;border:1px solid var(--border);color:var(--text-white);font-family:inherit;font-size:12.5px;cursor:pointer;letter-spacing:.5px;}
+.choiceBtn:hover{border-color:var(--neon-blue);color:var(--neon-blue);}
+.choiceBtn.correct{border-color:var(--matrix-green);background:rgba(0,255,136,.12);color:var(--matrix-green);}
+.choiceBtn.wrong{border-color:var(--warn-red);background:rgba(255,56,96,.12);color:var(--warn-red);}
+.stepRow{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;margin-bottom:8px;background:#0d1117;border:1px solid var(--border);font-size:12.5px;}
+.stepRow.done{border-color:var(--matrix-green);color:var(--matrix-green);}
+.stepRow button{padding:6px 12px;font-size:11px;}
+.meterWrap{height:16px;background:#111;border:1px solid var(--border);margin:10px 0;overflow:hidden;}
+.meterFill{height:100%;width:0%;background:linear-gradient(90deg,var(--warn-red),var(--matrix-green));transition:width .3s;}
+.meterLabel{font-size:11px;letter-spacing:1px;margin-bottom:4px;color:#9fb2c2;}
+.dataItem{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;margin-bottom:6px;background:#0d1117;border:1px solid var(--border);font-size:12px;cursor:pointer;}
+.dataItem.selected{border-color:var(--neon-blue);background:rgba(0,229,255,.1);}
+.dataItem.locked{opacity:.4;cursor:not-allowed;}
+.storageBar{height:14px;background:#111;border:1px solid var(--border);margin:10px 0;overflow:hidden;}
+.storageFill{height:100%;background:var(--warn-red);transition:width .3s;}
+.missionMsg{font-size:12px;letter-spacing:1px;margin-top:10px;min-height:16px;}
+.camGrid{display:grid;grid-template-columns:repeat(3,90px);gap:8px;margin-bottom:14px;}
+.camCell{height:60px;background:#0d1117;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;color:#7f92a3;letter-spacing:1px;}
+.camCell.offline{border-color:var(--warn-red);color:var(--warn-red);}
+.camCell.selected{border-color:var(--neon-blue);color:var(--neon-blue);}
+
+/* ---------- badge toast ---------- */
+#badgeToast{
+  position:absolute;top:56px;left:50%;transform:translateX(-50%) translateY(-20px);
+  background:rgba(5,7,10,.94);border:1px solid var(--neon-purple);color:var(--neon-purple);
+  padding:10px 20px;font-size:12px;letter-spacing:2px;opacity:0;transition:all .4s;pointer-events:none;z-index:65;text-align:center;
+}
+#badgeToast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ---------- shop ---------- */
+.shopGrid{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+.shopItem{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#0d1117;border:1px solid var(--border);font-size:12.5px;}
+.shopItem button{padding:6px 14px;font-size:11px;}
+.shopItem button:disabled{opacity:.35;cursor:not-allowed;}
+.shopItem.owned button{border-color:var(--matrix-green);color:var(--matrix-green);}
+
+/* ---------- incident marker ---------- */
+@keyframes incidentPulse{0%,100%{opacity:.4;}50%{opacity:1;}}
+
+/* ---------- level up / boss / ending ---------- */
+.bigPanel{border:1px solid var(--border);background:rgba(10,14,20,.85);padding:34px 46px;min-width:280px;}
+.bigPanel h1{letter-spacing:4px;font-size:clamp(22px,4vw,34px);color:var(--matrix-green);text-shadow:0 0 12px var(--matrix-green);margin-bottom:18px;}
+.bigPanel .line{font-size:14px;letter-spacing:2px;margin:8px 0;opacity:0;transform:translateY(6px);transition:all .5s;}
+.bigPanel .line.show{opacity:1;transform:translateY(0);}
+#scene-boss .bigPanel h1{color:var(--warn-red);text-shadow:0 0 14px var(--warn-red);}
+#scene-boss{animation:glitchbg .15s infinite;}
+@keyframes glitchbg{0%,97%{filter:none;}98%{filter:hue-rotate(20deg) contrast(1.3);}99%{filter:none;}}
+
+.footerNote{position:absolute;bottom:10px;font-size:10px;color:#4b5a68;letter-spacing:1px;}
+button{font-family:inherit;}
+
+/* ---------- responsive: mobile canvas scaling ---------- */
+#gameWrap{max-width:96vw;}
+#gameCanvas{max-width:96vw;max-height:62vh;width:auto;height:auto;touch-action:none;}
+#scene-game{padding-top:30px;}
+#gameHint2{max-width:92vw;}
+
+/* ---------- on-screen touch controls (mobile) ---------- */
+#mobileControls{display:none;position:fixed;left:0;right:0;bottom:0;z-index:40;padding:0 16px calc(14px + env(safe-area-inset-bottom));pointer-events:none;justify-content:space-between;align-items:flex-end;}
+#mobileControls.show{display:flex;}
+.padGrid{pointer-events:auto;display:grid;grid-template-columns:52px 52px 52px;grid-template-rows:52px 52px 52px;gap:4px;}
+.padBtn{grid-area:auto;background:rgba(13,17,23,.72);border:1px solid var(--border);color:var(--neon-blue);
+  display:flex;align-items:center;justify-content:center;font-size:18px;border-radius:10px;user-select:none;
+  -webkit-user-select:none;touch-action:none;}
+.padBtn:active,.padBtn.active{background:rgba(0,229,255,.25);border-color:var(--neon-blue);}
+.padUp{grid-column:2;grid-row:1;} .padLeft{grid-column:1;grid-row:2;} .padRight{grid-column:3;grid-row:2;} .padDown{grid-column:2;grid-row:3;}
+.actionCol{pointer-events:auto;display:flex;flex-direction:column;align-items:center;gap:10px;}
+.actBtn{width:64px;height:64px;border-radius:50%;background:rgba(0,255,136,.18);border:1px solid var(--matrix-green);
+  color:var(--matrix-green);font-size:12px;letter-spacing:1px;display:flex;align-items:center;justify-content:center;
+  user-select:none;-webkit-user-select:none;touch-action:none;text-align:center;}
+.actBtn:active,.actBtn.active{background:rgba(0,255,136,.35);}
+.pauseBtn{width:42px;height:42px;border-radius:50%;background:rgba(13,17,23,.72);border:1px solid var(--border);
+  color:var(--text-white);font-size:14px;display:flex;align-items:center;justify-content:center;user-select:none;
+  -webkit-user-select:none;touch-action:none;}
+/* Tampilkan otomatis di perangkat dengan layar sentuh (jempol/coarse pointer) */
+@media (pointer:coarse){
+  #mobileControls{display:flex;}
+  #gameHint{display:none;}
+}
+@media (max-width:520px){
+  .cyberbtn{min-width:min(78vw,260px);font-size:13px;padding:11px 18px;}
+  .menuTitle{letter-spacing:5px;}
+  .card{padding:26px 20px;}
+}
+
+/* ---------- tambahan untuk admin ---------- */
+#adminQuestionList{max-height:50vh;overflow:auto;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- shared rain background -->
+  <canvas id="rainCanvas"></canvas>
+
+  <!-- SCENE: BOOT -->
+  <section id="scene-boot" class="scene active scanlines">
+    <div class="bootline">BOOTING SYSTEM...</div>
+    <div class="barwrap"><div class="barfill" id="bootFill"></div></div>
+    <div class="barpct" id="bootPct">0%</div>
+  </section>
+
+  <!-- SCENE: TERMINAL -->
+  <section id="scene-terminal" class="scene scanlines">
+    <div class="termbox">
+      <div class="termhead">==================== SECURITY CORE ====================</div>
+      <div class="termrow"><div class="termlabel">LOADING FIREWALL</div><div class="termbar"><div id="bar1"></div></div></div>
+      <div class="termrow"><div class="termlabel">LOADING DATABASE</div><div class="termbar"><div id="bar2"></div></div></div>
+      <div class="termrow"><div class="termlabel">LOADING AI</div><div class="termbar"><div id="bar3"></div></div></div>
+      <div class="termready" id="termReady">&gt; SYSTEM READY</div>
+    </div>
+  </section>
+
+  <!-- SCENE: LOGO -->
+  <section id="scene-logo" class="scene scanlines" onclick="goStory()">
+    <div class="logotitle glitch">CYBER</div>
+    <div class="logosub glitch">GUARDIAN</div>
+    <div class="hint">TEKAN UNTUK LANJUT</div>
+  </section>
+
+  <!-- SCENE: STORY -->
+  <section id="scene-story" class="scene scanlines" style="padding:0 8vw;">
+    <div class="storyline" id="s1">Tahun 2026.</div>
+    <div class="storyline" id="s2">Ancaman siber meningkat.</div>
+    <div class="storyline" id="s3">Perusahaan menjadi sasaran <span class="accent">serangan setiap hari</span>.</div>
+    <div class="storyline" id="s4">Kini...</div>
+    <div class="storyline" id="s5"><span class="accent">Kamu adalah harapan terakhir.</span></div>
+  </section>
+
+  <!-- SCENE: MENU -->
+  <section id="scene-menu" class="scene">
+    <div class="menuGrid"></div>
+    <div class="menuTitle" style="z-index:2;">CYBER GUARDIAN</div>
+    <div class="menuSub">IT DIVISION DEFENSE PROTOCOL</div>
+    <div class="menuBtns">
+      <button class="cyberbtn" id="continueBtn" style="display:none;" onclick="continueGame()">▶ LANJUTKAN</button>
+      <button class="cyberbtn" onclick="openLevelSelect()">START</button>
+      <button class="cyberbtn" onclick="openCoopMenu()">👥 MABAR (CO-OP)</button>
+      <button class="cyberbtn" onclick="openLeaderboard()">LEADERBOARD</button>
+      <button class="cyberbtn" onclick="openHowTo()">CARA BERMAIN</button>
+      <button class="cyberbtn" onclick="openSettings()">SETTING</button>
+      <button class="cyberbtn" onclick="openAdmin()">ADMIN</button>
+      <button class="cyberbtn" onclick="openExit()">EXIT</button>
+    </div>
+    <div class="footerNote">v1.0 — PUSRI IT DIVISION SIMULATION</div>
+  </section>
+
+  <!-- OVERLAY: name input -->
+  <div class="overlay" id="ov-name">
+    <div class="card">
+      <h2 id="nameFieldTitle">SIAPA NAMAMU, ANALYST?</h2>
+      <input type="text" id="nameField" maxlength="16" placeholder="Masukkan nama...">
+      <div class="rowbtns">
+        <button class="smallbtn" onclick="closeOverlay('ov-name')">BATAL</button>
+        <button class="smallbtn primary" onclick="confirmName()">MASUK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY: pilih tingkat kesulitan -->
+  <div class="overlay" id="ov-level">
+    <div class="card" style="text-align:center;">
+      <h2>PILIH TINGKAT KESULITAN</h2>
+      <div style="margin:20px 0;">
+        <button class="cyberbtn" onclick="selectLevel('easy')" style="min-width:200px;">MUDAH</button>
+        <button class="cyberbtn" onclick="selectLevel('medium')" style="min-width:200px;">SEDANG</button>
+        <button class="cyberbtn" onclick="selectLevel('hard')" style="min-width:200px;">SULIT</button>
+        <button class="cyberbtn" onclick="selectLevel('mix')" style="min-width:200px;">CAMPURAN</button>
+      </div>
+      <div class="rowbtns" style="justify-content:center;">
+        <button class="smallbtn" onclick="closeOverlay('ov-level')">BATAL</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY: ADMIN -->
+  <div class="overlay" id="ov-admin">
+    <div class="card" style="max-width:700px;max-height:80vh;overflow:auto;text-align:left;">
+      <h2 style="text-align:center;">ADMIN — BANK SOAL</h2>
+      <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+        <button class="smallbtn" onclick="filterAdminQuestions('all')">SEMUA</button>
+        <button class="smallbtn" onclick="filterAdminQuestions('easy')">MUDAH</button>
+        <button class="smallbtn" onclick="filterAdminQuestions('medium')">SEDANG</button>
+        <button class="smallbtn" onclick="filterAdminQuestions('hard')">SULIT</button>
+        <button class="smallbtn primary" onclick="confirmResetLeaderboard()" style="border-color:var(--warn-red);color:var(--warn-red);">RESET LEADERBOARD</button>
+      </div>
+      <div id="adminQuestionList"></div>
+      <div class="rowbtns" style="justify-content:center;margin-top:16px;">
+        <button class="smallbtn primary" onclick="closeOverlay('ov-admin')">TUTUP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY: leaderboard -->
+  <div class="overlay" id="ov-lb">
+    <div class="card" style="text-align:center;">
+      <h2>LEADERBOARD</h2>
+      <ul id="lbList"><li><span>MEMUAT...</span></li></ul>
+      <div class="rowbtns" style="justify-content:center;">
+        <button class="smallbtn primary" onclick="closeOverlay('ov-lb')">TUTUP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY: cara bermain -->
+  <div class="overlay" id="ov-howto">
+    <div class="card" style="text-align:left;max-width:480px;">
+      <h2 style="text-align:center;">CARA BERMAIN</h2>
+      <ol style="font-size:12.5px;line-height:1.9;color:#cfe3ee;padding-left:18px;margin-bottom:18px;">
+        <li>Tekan <b style="color:var(--matrix-green);">START</b>, pilih tingkat kesulitan, lalu masukkan nama analyst-mu.</li>
+        <li>Ikuti adegan lift & dialog <b style="color:var(--matrix-green);">Manager</b> — dengarkan tugas yang diberikan.</li>
+        <li>Tekan <b style="color:var(--matrix-green);">MULAI BEKERJA</b> untuk masuk ke peta kantor.</li>
+        <li>Gerakkan karakter pakai <b style="color:var(--matrix-green);">WASD / Panah</b>, dekati meja/stasiun di tiap ruangan, lalu tekan <b style="color:var(--matrix-green);">E</b> untuk membuka misi.</li>
+        <li>Selesaikan misi di setiap divisi: <b>Helpdesk</b> (phishing/SMS/penipuan), <b>Programmer</b> (password/update), <b>Network</b> (jaringan), <b>Server</b> (firewall/overheat/backup), <b>CCTV</b> (kamera/review), <b>Data Center</b> (storage/restore).</li>
+        <li>Setiap misi selesai memberi <b style="color:var(--matrix-green);">XP & Coin</b>. Jawaban salah mengurangi <b style="color:var(--warn-red);">nyawa</b> — jaga jangan sampai habis.</li>
+        <li>Datangi <b style="color:var(--matrix-green);">Manager Room</b> untuk mengisi Laporan Harian setelah beberapa misi selesai.</li>
+        <li>Setelah <b style="color:var(--matrix-green);">semua misi divisi</b> selesai, temui <b style="color:var(--matrix-green);">Direktur</b> untuk melapor dan lanjut ke tahap akhir (level up → boss stage → ending).</li>
+        <li>Skor akhir (XP, waktu, status) otomatis tercatat di <b style="color:var(--matrix-green);">Leaderboard</b>.</li>
+      </ol>
+      <div class="rowbtns" style="justify-content:center;">
+        <button class="smallbtn primary" onclick="closeOverlay('ov-howto')">MENGERTI</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY: co-op (buat / gabung room) -->
+  <div class="overlay" id="ov-coop">
+    <div class="card" style="text-align:center;max-width:380px;">
+      <h2>👥 MODE MABAR (CO-OP)</h2>
+      <div style="font-size:11.5px;line-height:1.6;color:#8895a3;margin-bottom:18px;text-align:left;">
+        2 pemain, tiap orang main di device masing-masing. Saat salah satu menyelesaikan misi, XP &amp; koinnya otomatis ikut masuk ke pasangannya di room yang sama (sinkron tiap beberapa detik).
+      </div>
+      <div style="margin-bottom:16px;">
+        <button class="smallbtn primary" style="width:100%;" onclick="coopCreateRoom()">BUAT ROOM BARU</button>
+      </div>
+      <div style="margin-bottom:8px;border-top:1px dashed rgba(255,255,255,.12);padding-top:16px;">
+        <input type="text" id="coopJoinCode" maxlength="6" placeholder="KODE ROOM (mis. AB3F9)" style="text-transform:uppercase;text-align:center;">
+        <button class="smallbtn" style="width:100%;margin-top:10px;" onclick="coopJoinRoom()">GABUNG ROOM</button>
+      </div>
+      <div class="rowbtns" style="justify-content:center;margin-top:10px;">
+        <button class="smallbtn" onclick="closeOverlay('ov-coop')">TUTUP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY: co-op lobby -->
+  <div class="overlay" id="ov-coop-lobby">
+    <div class="card" style="text-align:center;max-width:380px;">
+      <h2>ROOM <span id="coopLobbyCode" style="color:var(--matrix-green);"></span></h2>
+      <div style="font-size:11.5px;color:#8895a3;margin-bottom:14px;">Bagikan kode ini ke temanmu di device lain, lalu masing-masing tekan MULAI MAIN.</div>
+      <ul id="coopLobbyPlayers" style="list-style:none;text-align:left;margin-bottom:18px;font-size:13px;min-width:260px;"></ul>
+      <div class="rowbtns" style="justify-content:center;">
+        <button class="smallbtn" style="border-color:var(--warn-red);color:var(--warn-red);" onclick="coopLeaveRoom()">KELUAR ROOM</button>
+        <button class="smallbtn primary" onclick="coopStartFromLobby()">MULAI MAIN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY: settings -->
+  <div class="overlay" id="ov-settings">
+    <div class="card" style="text-align:center;">
+      <h2>SETTING</h2>
+      <div style="margin-bottom:20px;font-size:13px;letter-spacing:1px;">
+        SOUND: <span id="soundState">ON</span>
+        <div style="margin-top:10px;"><button class="smallbtn" onclick="toggleSound()">TOGGLE SOUND</button></div>
+      </div>
+      <div style="margin-bottom:20px;font-size:13px;letter-spacing:1px;">
+        MUSIK: <span id="musicState">ON</span>
+        <div style="margin-top:10px;"><button class="smallbtn" onclick="toggleMusic()">TOGGLE MUSIK</button></div>
+      </div>
+      <div style="margin-bottom:20px;padding-top:14px;border-top:1px dashed rgba(255,255,255,.12);font-size:13px;letter-spacing:1px;">
+        MABAR: <span id="coopSettingsStatus">TIDAK AKTIF</span>
+        <div style="margin-top:10px;"><button class="smallbtn" id="coopLeaveBtn" style="display:none;border-color:var(--warn-red);color:var(--warn-red);" onclick="coopLeaveRoom()">KELUAR ROOM MABAR</button></div>
+      </div>
+      <div class="rowbtns" style="justify-content:center;">
+        <button class="smallbtn primary" onclick="closeOverlay('ov-settings')">TUTUP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY: exit -->
+  <div class="overlay" id="ov-exit">
+    <div class="card" style="text-align:center;">
+      <h2>SAMPAI JUMPA, ANALYST</h2>
+      <p style="font-size:13px;opacity:.8;margin-bottom:20px;">Tutup tab ini untuk keluar dari simulasi.</p>
+      <div class="rowbtns" style="justify-content:center;">
+        <button class="smallbtn primary" onclick="closeOverlay('ov-exit')">KEMBALI</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE: LOADING -->
+  <section id="scene-loading" class="scene scanlines">
+    <div class="loadwrap">
+      <div class="loadlabel" id="loadLabel">LOADING...</div>
+      <div class="barwrap"><div class="barfill" id="loadFill"></div></div>
+    </div>
+  </section>
+
+  <!-- SCENE: INTRO -->
+  <section id="scene-intro" class="scene">
+    <div class="introTop" id="introLine">HARI PERTAMA KERJA</div>
+    <div class="introTime" id="introTime">07.30 WIB — SENIN</div>
+    <div class="liftScene" id="liftScene">
+      <div class="liftDoorL" id="doorL"></div>
+      <div class="liftDoorR" id="doorR"></div>
+      <svg class="liftChar" id="liftChar" viewBox="0 0 34 52"><g></g></svg>
+      <div class="dialogBox" id="managerDialog">
+        <b style="color:var(--neon-blue);">Manager:</b> Selamat datang. Hari ini kamu resmi menjadi Cyber Security Officer.<br><br>
+        Tugasmu: kunjungi <b style="color:var(--matrix-green);">setiap ruangan divisi</b> di kantor (Helpdesk, Programmer, Network, Server, CCTV, Data Center), selesaikan <b style="color:var(--matrix-green);">semua misi</b> yang ada di sana, lalu kembali ke ruangan saya untuk mengisi <b style="color:var(--matrix-green);">Laporan Harian</b>. Setelah semua divisi aman, lapor ke Direktur untuk menutup hari ini.
+      </div>
+    </div>
+    <button class="cyberbtn introBtn" id="startWorkBtn" style="display:none;" onclick="beginGame()">MULAI BEKERJA</button>
+  </section>
+
+  <!-- SCENE: GAME -->
+  <section id="scene-game" class="scene">
+    <div id="gameWrap">
+      <div id="hud">
+        <div><span class="hname" id="hudName">ALEX</span> · <span id="hudLevel" style="color:var(--neon-purple);">INTERN</span> · <span class="hquest" id="hudQuest">MISI 0/15</span> · <span id="hudLives" style="color:var(--warn-red);letter-spacing:2px;">❤❤❤❤❤</span> · <span id="hudCoop" style="display:none;color:var(--neon-purple);font-size:11px;"></span></div>
+        <div>💰<span id="hudCoin" style="color:#ffd166;margin-right:10px;">0</span>XP<span id="xpwrap"><span id="xpfill"></span></span></div>
+      </div>
+      <canvas id="gameCanvas" width="720" height="540"></canvas>
+      <div id="interactPrompt">TEKAN [E]</div>
+      <div id="toast">+100 XP</div>
+      <div id="badgeToast">🏆 BADGE BARU</div>
+    </div>
+    <div id="gameHint">WASD / ARROW = GERAK &nbsp;·&nbsp; E = INTERAKSI &nbsp;·&nbsp; ESC = PAUSE</div>
+    <div id="gameHint2" style="margin-top:6px;font-size:10.5px;letter-spacing:.5px;color:#5c6b78;max-width:560px;">
+      Tekan <b style="color:var(--neon-blue);">ESC</b> untuk buka menu Pause — di sana ada tombol
+      <b style="color:var(--warn-red);">KELUAR &amp; CATAT SKOR SEKARANG</b> untuk mengakhiri permainan kapan saja;
+      skor XP dan progres misimu saat itu langsung disimpan ke Leaderboard dengan status "KELUAR".
+    </div>
+
+    <!-- MOBILE TOUCH CONTROLS -->
+    <div id="mobileControls">
+      <div class="padGrid">
+        <div class="padBtn padUp" data-dir="w">▲</div>
+        <div class="padBtn padLeft" data-dir="a">◀</div>
+        <div class="padBtn padRight" data-dir="d">▶</div>
+        <div class="padBtn padDown" data-dir="s">▼</div>
+      </div>
+      <div class="actionCol">
+        <div class="pauseBtn" id="mobilePauseBtn">⏸</div>
+        <div class="actBtn" id="mobileInteractBtn">E<br>AKSI</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MISSION MODAL (generic: choice / steps / password / select-multiple / pick-one / report) -->
+  <div id="missionModal">
+    <div class="missionCard">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <div class="missionRoom" id="mRoom">RUANGAN</div>
+          <div class="missionTitle" id="mTitle">MISI</div>
+        </div>
+        <button class="smallbtn" onclick="closeMissionModal()" style="padding:4px 9px;font-size:11px;">✕</button>
+      </div>
+      <div class="missionBody" id="mBody"></div>
+      <div class="missionMsg" id="mMsg"></div>
+      <div class="rowbtns" id="mBtns" style="display:none;margin-top:10px;">
+        <button class="smallbtn primary" id="mCloseBtn">LANJUTKAN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAUSE OVERLAY -->
+  <div class="overlay" id="ov-pause">
+    <div class="card" style="text-align:center;">
+      <h2>PAUSE</h2>
+      <div class="menuBtns" style="align-items:stretch;">
+        <button class="cyberbtn" onclick="closeOverlay('ov-pause')">RESUME</button>
+        <button class="cyberbtn" onclick="openShop()">TOKO (SHOP)</button>
+        <button class="cyberbtn" onclick="restartGame()">RESTART MISI</button>
+        <button class="cyberbtn" onclick="toMainMenu()">SIMPAN & KE MENU (LANJUT NANTI)</button>
+        <button class="cyberbtn" style="color:var(--warn-red);" onclick="openQuitConfirm()">KELUAR & CATAT SKOR SEKARANG</button>
+      </div>
+      <div style="text-align:left;margin-top:22px;padding-top:14px;border-top:1px dashed rgba(255,255,255,.12);font-size:11px;line-height:1.7;color:#8895a3;letter-spacing:.5px;">
+        <b style="color:var(--matrix-green);">RESUME</b> — lanjut main.<br>
+        <b style="color:var(--matrix-green);">TOKO</b> — belanja pakai koin yang sudah dikumpulkan.<br>
+        <b style="color:var(--matrix-green);">RESTART MISI</b> — ulangi dari awal, progres sekarang hilang.<br>
+        <b style="color:var(--matrix-green);">SIMPAN & KE MENU</b> — progres disimpan, bisa lanjut nanti.<br>
+        <b style="color:var(--warn-red);">KELUAR & CATAT SKOR</b> — akhiri game sekarang juga, skor XP & waktu saat ini langsung masuk Leaderboard berstatus "KELUAR" (tidak bisa dilanjutkan lagi).
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIT CONFIRM OVERLAY -->
+  <div class="overlay" id="ov-quit-confirm">
+    <div class="card" style="text-align:center;max-width:360px;">
+      <h2 style="color:var(--warn-red);">KELUAR SEKARANG?</h2>
+      <div style="font-size:13px;line-height:1.6;margin-bottom:22px;" id="quitConfirmMsg"></div>
+      <div class="rowbtns" style="justify-content:center;">
+        <button class="smallbtn" onclick="closeOverlay('ov-quit-confirm')">BATAL</button>
+        <button class="smallbtn primary" style="border-color:var(--warn-red);color:var(--warn-red);" onclick="confirmQuitAndSaveScore()">YA, KELUAR & CATAT SKOR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY: shop -->
+  <div class="overlay" id="ov-shop">
+    <div class="card" style="text-align:center;max-width:380px;">
+      <h2>TOKO ANALYST</h2>
+      <div style="font-size:12px;color:#ffd166;margin-bottom:14px;">SALDO: <span id="shopCoin">0</span> COIN</div>
+      <div class="shopGrid" id="shopGrid"></div>
+      <div class="rowbtns" style="justify-content:center;">
+        <button class="smallbtn primary" onclick="closeOverlay('ov-shop')">TUTUP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MINIGAME -->
+  <div id="minigame">
+    <div class="mgHead" id="mgHead">SCAN MALWARE</div>
+    <div class="mgTimer" id="mgTimer">WAKTU: 15</div>
+    <div class="mgScore" id="mgScore">BENAR: 0 / 6</div>
+    <div id="mgDragWrap">
+      <div class="mgHint">PILIH JAWABAN YANG PALING TEPAT</div>
+      <div class="mgProgress" id="mgProgress"></div>
+      <div class="mgQBox">
+        <div class="mgQuestion" id="mgQuestion"></div>
+        <div id="mgCards"></div>
+      </div>
+    </div>
+    <div class="mgResult" id="mgResult"></div>
+    <div class="rowbtns" id="mgBtns" style="display:none;margin-top:16px;">
+      <button class="smallbtn primary" id="mgRetryBtn" onclick="retryMinigame()">ULANGI</button>
+      <button class="smallbtn" id="mgCloseBtn" onclick="closeMinigame()">TUTUP</button>
+    </div>
+  </div>
+
+  <!-- SCENE: LEVEL UP -->
+  <section id="scene-levelup" class="scene">
+    <div class="bigPanel">
+      <h1>LEVEL UP</h1>
+      <div class="line" id="lu1">JUNIOR ANALYST</div>
+      <div class="line" id="lu2">+100 HP</div>
+      <div class="line" id="lu3">+SKILL POINT</div>
+      <div class="line" id="lu4"><button class="cyberbtn" onclick="afterLevelUp()">LANJUTKAN</button></div>
+    </div>
+  </section>
+
+  <!-- SCENE: BOSS WARNING -->
+  <section id="scene-boss" class="scene">
+    <div class="bigPanel">
+      <h1>WARNING!!</h1>
+      <div class="line show" style="color:var(--warn-red);">MASSIVE CYBER ATTACK — SHADOW VIRUS</div>
+      <div class="line show">DEFEND THE SYSTEM</div>
+      <div class="line show"><button class="cyberbtn" onclick="startBossSequence()">MULAI PERTAHANAN</button></div>
+    </div>
+  </section>
+
+  <!-- SCENE: ENDING -->
+  <section id="scene-ending" class="scene">
+    <div class="bigPanel">
+      <h1>SYSTEM SECURED</h1>
+      <div class="line" id="e1">100%</div>
+      <div class="line" id="e2">FIREWALL ONLINE</div>
+      <div class="line" id="e3">DATABASE SAFE</div>
+      <div class="line" id="e4">MISSION COMPLETE</div>
+      <div class="line" id="eWeak" style="font-size:13px;"></div>
+      <div class="line" id="e5"><button class="cyberbtn" onclick="finishAndShowLeaderboard()">LIHAT LEADERBOARD</button></div>
+      <div class="line" id="e6"><button class="cyberbtn" onclick="restartFromGameOver()">ULANGI</button></div>
+      <div class="line" id="e7"><button class="cyberbtn" onclick="keluarKeAwal()">KELUAR</button></div>
+    </div>
+  </section>
+
+  <!-- SCENE: GAME OVER (nyawa habis / virus meretas) -->
+  <section id="scene-gameover" class="scene scanlines">
+    <div class="menuGrid"></div>
+    <div class="menuTitle" style="z-index:2;color:var(--warn-red);text-shadow:0 0 16px var(--warn-red),0 0 34px rgba(255,56,96,.5);">SISTEM DIRETAS</div>
+    <div class="menuSub" style="color:var(--warn-red);">VIRUS BERHASIL MENGAMBIL ALIH SISTEM PUSRI</div>
+    <div style="z-index:2;font-size:12px;letter-spacing:1px;line-height:2;margin-bottom:34px;text-align:center;max-width:440px;padding:0 20px;">
+      <div>ANALYST: <span id="goName" style="color:var(--neon-blue);">ALEX</span></div>
+      <div>MISI SELESAI: <span id="goQuest" style="color:var(--matrix-green);">0/15</span> &nbsp;·&nbsp; XP: <span id="goXp" style="color:var(--matrix-green);">0</span> &nbsp;·&nbsp; COIN: <span id="goCoin" style="color:#ffd166;">0</span></div>
+      <div style="margin-top:10px;color:var(--warn-red);opacity:.9;" id="goReason">Terlalu banyak kesalahan keamanan.</div>
+      <div id="goWeak"></div>
+      <div style="margin-top:10px;opacity:.6;">Skor kamu sudah tercatat di leaderboard.</div>
+    </div>
+    <div class="menuBtns" style="z-index:2;">
+      <button class="cyberbtn" onclick="restartFromGameOver()">ULANGI MISI</button>
+      <button class="cyberbtn" onclick="openLeaderboard()">LIHAT LEADERBOARD</button>
+      <button class="cyberbtn" onclick="keluarKeAwal()">KELUAR</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ================= AUDIO ================= */
+let audioCtx=null, soundOn=true;
+function initAudio(){ if(!audioCtx){ try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } }
+function beep(freq,dur,type){
+  if(!soundOn) return;
+  initAudio(); if(!audioCtx) return;
+  const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+  o.type=type||'square'; o.frequency.value=freq;
+  g.gain.value=0.05;
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start();
+  g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+dur);
+  o.stop(audioCtx.currentTime+dur);
+}
+function toggleSound(){ soundOn=!soundOn; document.getElementById('soundState').textContent = soundOn?'ON':'OFF'; }
+
+/* ---------- loading sound effect (external audio file) ---------- */
+const loadingSound=new Audio('loading-sound.mp3');
+loadingSound.volume=0.5;
+function playLoadingSound(){
+  if(!soundOn) return;
+  try{ loadingSound.currentTime=0; }catch(e){}
+  loadingSound.play().catch(()=>{});
+}
+function stopLoadingSound(){
+  loadingSound.pause();
+  try{ loadingSound.currentTime=0; }catch(e){}
+}
+
+/* ---------- background music (external audio file) ---------- */
+let musicOn=true, musicPlaying=false;
+const bgMusic=new Audio('bgm.mp3');
+bgMusic.loop=true;
+bgMusic.volume=0.4;
+function startMusic(){
+  if(musicPlaying || !musicOn) return;
+  musicPlaying=true;
+  bgMusic.play().catch(()=>{ musicPlaying=false; });
+}
+function stopMusic(){
+  musicPlaying=false;
+  bgMusic.pause();
+}
+function toggleMusic(){
+  musicOn=!musicOn;
+  document.getElementById('musicState').textContent = musicOn?'ON':'OFF';
+  if(musicOn) startMusic(); else stopMusic();
+}
+document.addEventListener('click', ()=>{ initAudio(); if(musicOn) startMusic(); }, {once:true});
+document.addEventListener('keydown', ()=>{ initAudio(); if(musicOn) startMusic(); }, {once:true});
+
+/* ================= SCENE SWITCH ================= */
+function showScene(id){
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function closeOverlay(id){ document.getElementById(id).classList.remove('active'); if(id==='ov-pause') paused=false; }
+function openOverlay(id){ document.getElementById(id).classList.add('active'); }
+
+/* ================= DIGITAL RAIN ================= */
+const rainCanvas=document.getElementById('rainCanvas');
+const rctx=rainCanvas.getContext('2d');
+let rainCols=[];
+function sizeRain(){
+  rainCanvas.width=window.innerWidth; rainCanvas.height=window.innerHeight;
+  const n=Math.floor(rainCanvas.width/16);
+  rainCols=new Array(n).fill(0).map(()=>Math.random()*-40);
+}
+sizeRain(); window.addEventListener('resize', sizeRain);
+checkContinueAvailable();
+const rainChars="01アイウエオカキクケコ$#%&";
+function drawRain(){
+  rctx.fillStyle="rgba(10,10,10,0.15)";
+  rctx.fillRect(0,0,rainCanvas.width,rainCanvas.height);
+  rctx.fillStyle="#00FF88";
+  rctx.font="14px monospace";
+  for(let i=0;i<rainCols.length;i++){
+    const ch=rainChars[Math.floor(Math.random()*rainChars.length)];
+    rctx.fillText(ch, i*16, rainCols[i]*16);
+    if(rainCols[i]*16 > rainCanvas.height && Math.random()>0.975) rainCols[i]=0;
+    rainCols[i]++;
+  }
+  requestAnimationFrame(drawRain);
+}
+drawRain();
+
+/* ================= BOOT ================= */
+(function boot(){
+  playLoadingSound();
+  const fill=document.getElementById('bootFill'), pct=document.getElementById('bootPct');
+  const steps=[10,35,60,85,100];
+  let i=0;
+  function step(){
+    if(i>=steps.length){ setTimeout(()=>{ document.getElementById('scene-boot').classList.add('flicker'); beep(220,.2,'square'); setTimeout(()=>{showScene('scene-terminal'); runTerminal();}, 260); }, 300); return; }
+    fill.style.width=steps[i]+"%"; pct.textContent=steps[i]+"%";
+    beep(440+steps[i]*2,.05,'square');
+    i++; setTimeout(step, 380);
+  }
+  setTimeout(step, 400);
+})();
+
+/* ================= TERMINAL ================= */
+function runTerminal(){
+  const bars=['bar1','bar2','bar3'];
+  let i=0;
+  function step(){
+    if(i>=bars.length){ setTimeout(()=>{ document.getElementById('termReady').classList.add('show'); beep(660,.25,'sine'); setTimeout(goLogo, 1000); }, 300); return; }
+    document.getElementById(bars[i]).style.width="100%";
+    beep(300+i*80,.15,'triangle');
+    i++; setTimeout(step, 750);
+  }
+  setTimeout(step, 300);
+}
+function goLogo(){ stopLoadingSound(); showScene('scene-logo'); }
+
+/* ================= STORY ================= */
+let logoAdvanced=false;
+function goStory(){
+  if(logoAdvanced) return; logoAdvanced=true;
+  showScene('scene-story');
+  const lines=['s1','s2','s3','s4','s5'];
+  lines.forEach((id,idx)=>{
+    setTimeout(()=>document.getElementById(id).classList.add('show'), 500+idx*750);
+  });
+  setTimeout(()=>{ showScene('scene-menu'); logoAdvanced=false; }, 500+lines.length*750+1400);
+}
+
+/* ================= MENU ACTIONS ================= */
+let nameInputMode='solo', pendingCoopJoinCode=null;
+function openNameInput(mode){
+  nameInputMode=mode||'solo';
+  const titleEl=document.getElementById('nameFieldTitle');
+  if(titleEl){
+    if(nameInputMode==='coop-create') titleEl.textContent='BUAT ROOM — SIAPA NAMAMU?';
+    else if(nameInputMode==='coop-join') titleEl.textContent='GABUNG ROOM — SIAPA NAMAMU?';
+    else titleEl.textContent='SIAPA NAMAMU, ANALYST?';
+  }
+  openOverlay('ov-name');
+  document.getElementById('nameField').focus();
+}
+let playerName="ALEX";
+function confirmName(){
+  const v=document.getElementById('nameField').value.trim();
+  playerName = v.length? v.toUpperCase().slice(0,16) : "ALEX";
+  closeOverlay('ov-name');
+  document.getElementById('hudName').textContent=playerName;
+  if(nameInputMode==='coop-create'){ coopDoCreateRoom(); return; }
+  if(nameInputMode==='coop-join'){ coopDoJoinRoom(pendingCoopJoinCode); return; }
+  coopRoomCode=null; // START solo dari menu = lepas dari room mabar manapun
+  runLoading();
+}
+function openSettings(){
+  document.getElementById('coopSettingsStatus').textContent = coopRoomCode ? ('AKTIF — ROOM '+coopRoomCode) : 'TIDAK AKTIF';
+  document.getElementById('coopLeaveBtn').style.display = coopRoomCode ? 'inline-block' : 'none';
+  openOverlay('ov-settings');
+}
+function openExit(){ openOverlay('ov-exit'); }
+function openHowTo(){ openOverlay('ov-howto'); }
+function openLeaderboard(){
+  openOverlay('ov-lb');
+  loadLeaderboard().then(list=>{
+    const ul=document.getElementById('lbList');
+    if(!list.length){ ul.innerHTML='<li><span>BELUM ADA DATA</span></li>'; return; }
+    const statusColor={MENANG:'var(--matrix-green)', KELUAR:'#ffd166', GAGAL:'var(--warn-red)'};
+    ul.innerHTML = list.map((e,idx)=>`<li><span>#${idx+1} ${e.name}</span><span>${e.xp} XP · ${e.time}s · <span style="color:${statusColor[e.status]||'var(--text-white)'}">${e.status||'MENANG'}</span></span></li>`).join('');
+  });
+}
+
+/* ================= MYSQL SYNC (via small PHP API) =================
+   Client-side JS can never talk to MySQL directly (no browser driver,
+   and exposing DB credentials to the browser would be unsafe) — so a
+   tiny PHP API (see /api/*.php + database.sql) sits in between. This
+   file calls that API first; if it's unreachable (API not deployed
+   yet, offline, or opened as a bare local file) it falls back to the
+   previous storage layers below so nothing ever breaks. Edit API_BASE
+   if you host the API somewhere other than an "api/" folder next to
+   this HTML file. */
+const API_BASE = 'api/';
+async function apiGetLeaderboard(){
+  const res = await fetch(API_BASE+'leaderboard.php');
+  if(!res.ok) throw new Error('api_leaderboard_get_failed');
+  return await res.json();
+}
+async function apiPostScore(entry){
+  const res = await fetch(API_BASE+'leaderboard.php', {
+    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(entry)
+  });
+  if(!res.ok) throw new Error('api_leaderboard_post_failed');
+  return await res.json();
+}
+function getPlayerUUID(){
+  let id = localStorage.getItem('cyberguardian-uuid');
+  if(!id){
+    id = (crypto && crypto.randomUUID) ? crypto.randomUUID() : 'p-'+Date.now()+'-'+Math.random().toString(16).slice(2);
+    try{ localStorage.setItem('cyberguardian-uuid', id); }catch(e){}
+  }
+  return id;
+}
+async function apiGetSave(uuid){
+  const res = await fetch(API_BASE+'save.php?uuid='+encodeURIComponent(uuid));
+  if(res.status===404) return null;
+  if(!res.ok) throw new Error('api_save_get_failed');
+  return await res.json();
+}
+async function apiPostSave(uuid,name,data){
+  const res = await fetch(API_BASE+'save.php', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({uuid,name,data})
+  });
+  if(!res.ok) throw new Error('api_save_post_failed');
+}
+async function apiDeleteSave(uuid){
+  const res = await fetch(API_BASE+'save.php?uuid='+encodeURIComponent(uuid), {method:'DELETE'});
+  if(!res.ok) throw new Error('api_save_delete_failed');
+}
+async function apiGetCoopRoom(code){
+  const res = await fetch(API_BASE+'coop-room.php?code='+encodeURIComponent(code));
+  if(res.status===404) return null;
+  if(!res.ok) throw new Error('api_coop_get_failed');
+  return await res.json();
+}
+async function apiCoopUpsert(action, code, extra){
+  // action: 'create' | 'join' | 'complete' — server yang menggabungkan data
+  // secara atomik (file lock), bukan client kirim seluruh room lalu saling timpa.
+  const body = Object.assign({action, code, pid:getPlayerUUID(), name:playerName}, extra||{});
+  const res = await fetch(API_BASE+'coop-room.php', {
+    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
+  });
+  if(res.status===404) return null; // khusus action 'join': room tidak ditemukan
+  if(!res.ok) throw new Error('api_coop_upsert_failed');
+  return await res.json();
+}
+
+/* ================= LEADERBOARD STORAGE =================
+   Order of attempts: 1) MySQL via API  2) Claude artifact storage
+   3) localStorage — so the score is never silently lost even if
+   the MySQL API isn't set up yet. */
+const LB_KEY='cyberguardian-leaderboard';
+async function loadLeaderboard(){
+  try{ return await apiGetLeaderboard(); }catch(e){ /* API not available, fall through */ }
+  try{
+    const res = await window.storage.get('leaderboard-entries', true);
+    if(res && res.value){ return JSON.parse(res.value); }
+  }catch(e){ /* fall through to localStorage */ }
+  try{
+    const raw=localStorage.getItem(LB_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return [];
+}
+async function saveScore(entry){
+  try{
+    const list = await apiPostScore(entry);
+    try{ localStorage.setItem(LB_KEY, JSON.stringify(list)); }catch(e){}
+    return list;
+  }catch(e){ /* API not available, fall back to local-only save */ }
+  let list=[];
+  try{ list = await loadLeaderboard(); }catch(e){ list=[]; }
+  list.push(entry);
+  list.sort((a,b)=> b.xp-a.xp || a.time-b.time);
+  list = list.slice(0,10);
+  try{ await window.storage.set('leaderboard-entries', JSON.stringify(list), true); }catch(e){}
+  try{ localStorage.setItem(LB_KEY, JSON.stringify(list)); }catch(e){}
+  return list;
+}
+/* ================= MABAR (CO-OP) =================
+   Tidak ada server realtime sendiri, jadi co-op ini memakai lapisan
+   penyimpanan bersama yang sama dengan leaderboard (window.storage
+   shared=true, dengan fallback tersirat lewat fungsi yang sudah ada).
+   Setiap device polling tiap beberapa detik — bukan real-time, tapi
+   cukup untuk berbagi progres misi antar 2 pemain di device berbeda.
+   Identitas pemain memakai UUID yang sama dengan getPlayerUUID(). */
+function openCoopMenu(){ openOverlay('ov-coop'); }
+function coopCreateRoom(){ closeOverlay('ov-coop'); openNameInput('coop-create'); }
+function coopJoinRoom(){
+  const code=document.getElementById('coopJoinCode').value.trim().toUpperCase();
+  if(!code){ showToast('MASUKKAN KODE ROOM DULU'); return; }
+  pendingCoopJoinCode=code;
+  closeOverlay('ov-coop');
+  openNameInput('coop-join');
+}
+function genRoomCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // tanpa I/O/0/1 biar tidak ketuker saat diketik ulang
+  let c='';
+  for(let i=0;i<5;i++) c+=chars[Math.floor(Math.random()*chars.length)];
+  return c;
+}
+async function loadCoopRoom(code){
+  // 1) PHP API di hosting sendiri — jalur utama, kalau ini jalan datanya
+  //    pasti sinkron antar-device.
+  try{ const r = await apiGetCoopRoom(code); if(r) return r; }catch(e){}
+  // 2) Claude artifact storage — jalan kalau game dibuka sebagai artifact di Claude.
+  try{
+    const res=await window.storage.get('coop-room:'+code, true);
+    if(res && res.value) return JSON.parse(res.value);
+  }catch(e){}
+  // 3) localStorage — fallback terakhir, tapi cuma per-browser (tidak sungguh
+  //    sinkron antar device), sekadar biar tidak error total.
+  try{
+    const raw=localStorage.getItem('coop-room-'+code);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return null;
+}
+async function saveCoopRoomFallback(code, data){
+  // Dipakai HANYA saat API PHP tidak tersedia. Ini tetap baca-ubah-tulis
+  // di client (window.storage / localStorage), jadi tetap berpotensi race
+  // kalau 2 device menyimpan nyaris bersamaan tanpa server nyata di tengah.
+  let ok=false;
+  try{ await window.storage.set('coop-room:'+code, JSON.stringify(data), true); ok=true; }catch(e){}
+  try{ localStorage.setItem('coop-room-'+code, JSON.stringify(data)); ok=true; }catch(e){}
+  return ok;
+}
+async function coopUpsertPlayer(code, action, extra){
+  // action 'create' (buat room / idempotent) atau 'join' (room harus sudah ada).
+  // extra opsional: {x,y,dir} — dipakai buat sinkron posisi karakter (mode "1 dunia").
+  // 1) Coba lewat PHP API dulu — operasi ini atomik di server.
+  try{
+    const room = await apiCoopUpsert(action, code, extra||{});
+    if(room) return room;
+    if(action==='join') return null; // 404 asli dari server: room memang tidak ada
+  }catch(e){ /* API tidak tersedia, lanjut fallback di bawah */ }
+  // 2) Fallback best-effort tanpa server nyata.
+  let room = await loadCoopRoom(code);
+  if(!room){
+    if(action==='join') return null;
+    room = { code, createdAt:Date.now(), players:{}, completedMissions:{} };
+  }
+  const pid=getPlayerUUID();
+  const prev=room.players[pid]||{};
+  room.players[pid]=Object.assign({}, prev, {name:playerName, lastSeen:Date.now()}, extra||{});
+  await saveCoopRoomFallback(code, room);
+  return room;
+}
+async function coopDoCreateRoom(){
+  const code=genRoomCode();
+  const room=await coopUpsertPlayer(code, 'create');
+  if(!room){ showToast('GAGAL BUAT ROOM — COBA LAGI'); return; }
+  coopRoomCode=code;
+  showToast('ROOM '+code+' BERHASIL DIBUAT');
+  openCoopLobby();
+}
+async function coopDoJoinRoom(code){
+  if(!code){ showToast('KODE ROOM TIDAK VALID'); return; }
+  const room=await coopUpsertPlayer(code, 'join');
+  if(!room){ showToast('ROOM "'+code+'" TIDAK DITEMUKAN'); return; }
+  coopRoomCode=code;
+  showToast('BERHASIL GABUNG ROOM '+code);
+  openCoopLobby();
+}
+function openCoopLobby(){
+  document.getElementById('coopLobbyCode').textContent=coopRoomCode;
+  openOverlay('ov-coop-lobby');
+  refreshCoopLobby();
+  if(coopLobbyPollIv) clearInterval(coopLobbyPollIv);
+  coopLobbyPollIv=setInterval(refreshCoopLobby, 3000);
+}
+async function refreshCoopLobby(){
+  if(!coopRoomCode) return;
+  const room=await coopUpsertPlayer(coopRoomCode, 'join'); // sekaligus jadi heartbeat
+  if(!room) return;
+  const pid=getPlayerUUID();
+  const ul=document.getElementById('coopLobbyPlayers');
+  const now=Date.now();
+  ul.innerHTML=Object.entries(room.players).map(([id,p])=>{
+    const online=(now-p.lastSeen)<12000;
+    return '<li style="display:flex;justify-content:space-between;padding:5px 2px;border-bottom:1px dashed rgba(255,255,255,.08);"><span>'+p.name+(id===pid?' (kamu)':'')+'</span><span style="color:'+(online?'var(--matrix-green)':'#666')+'">'+(online?'ONLINE':'OFFLINE')+'</span></li>';
+  }).join('');
+}
+function coopLeaveRoom(){
+  if(coopLobbyPollIv){ clearInterval(coopLobbyPollIv); coopLobbyPollIv=null; }
+  stopCoopSync();
+  coopRoomCode=null;
+  closeOverlay('ov-coop-lobby');
+  document.getElementById('hudCoop').style.display='none';
+  const btn=document.getElementById('coopLeaveBtn');
+  if(btn) btn.style.display='none';
+  const st=document.getElementById('coopSettingsStatus');
+  if(st) st.textContent='TIDAK AKTIF';
+  closeOverlay('ov-settings');
+}
+function coopStartFromLobby(){
+  if(coopLobbyPollIv){ clearInterval(coopLobbyPollIv); coopLobbyPollIv=null; }
+  closeOverlay('ov-coop-lobby');
+  document.getElementById('hudName').textContent=playerName;
+  runLoading();
+}
+function startCoopSync(){
+  if(!coopRoomCode) return;
+  stopCoopSync();
+  coopPollIv=setInterval(coopPoll, 1000); // ±1 detik: cukup responsif tanpa membebani hosting gratisan
+  coopPoll();
+}
+function stopCoopSync(){
+  if(coopPollIv){ clearInterval(coopPollIv); coopPollIv=null; }
+  coopPartner=null;
+}
+async function coopPoll(){
+  if(!coopRoomCode || !gameRunning) return;
+  const room=await coopUpsertPlayer(coopRoomCode, 'join', {x:player.x, y:player.y, dir:player.dir});
+  if(!room) return;
+  const pid=getPlayerUUID();
+  Object.entries(room.completedMissions).forEach(([key,info])=>{
+    if(info.by===pid) return; // misi milik kita sendiri, sudah diterapkan lokal
+    if(missionsDone[key]) return; // sudah tercatat (dari diri sendiri atau sudah diterapkan sebelumnya)
+    applyRemoteMissionComplete(key, info);
+  });
+  const others=Object.entries(room.players).filter(([id])=>id!==pid);
+  if(others.length){
+    const [pid2, p2]=others[0];
+    if(typeof p2.x==='number' && typeof p2.y==='number'){
+      if(!coopPartner || coopPartner.id!==pid2){
+        // pasangan baru pertama kali kelihatan — taruh langsung di posisinya (tanpa animasi meluncur dari 0,0)
+        coopPartner={id:pid2, name:p2.name, x:p2.x, y:p2.y, tx:p2.x, ty:p2.y, dir:p2.dir||'down', lastSeen:p2.lastSeen};
+      } else {
+        coopPartner.tx=p2.x; coopPartner.ty=p2.y; coopPartner.dir=p2.dir||coopPartner.dir; coopPartner.lastSeen=p2.lastSeen; coopPartner.name=p2.name;
+      }
+    }
+  } else {
+    coopPartner=null;
+  }
+  updateCoopHudStatus(room);
+}
+function applyRemoteMissionComplete(key, info){
+  const m=MISSIONS[key];
+  if(!m) return;
+  missionsDone[key]=true;
+  xp+=m.xp; coin+=m.coin; questCount++;
+  updateHUD();
+  showToast('🤝 '+(info.byName||'PARTNER')+' SELESAIKAN MISI · +'+m.xp+' XP');
+  if(m.badge) awardBadge(m.badge);
+  if(stationDone(m.station) && STATION_BADGE[m.station]) awardBadge(STATION_BADGE[m.station]);
+  if(questCount>=TOTAL_MISSIONS && !allDoneAnnounced){
+    allDoneAnnounced=true;
+    awardBadge('Cyber Guardian');
+    setTimeout(()=>showToast('SEMUA DIVISI AMAN — LAPORKAN KE DIREKTUR'), 1900);
+  }
+  saveProgress();
+}
+async function coopBroadcastMission(key, xpAmt, coinAmt){
+  if(!coopRoomCode) return;
+  // 1) PHP API — server yang mencatat misi selesai secara atomik, aman dari race.
+  try{
+    const room = await apiCoopUpsert('complete', coopRoomCode, {key, xp:xpAmt, coin:coinAmt});
+    if(room) return;
+  }catch(e){}
+  // 2) Fallback tanpa server nyata (window.storage / localStorage).
+  try{
+    const room=await loadCoopRoom(coopRoomCode);
+    if(!room || room.completedMissions[key]) return;
+    room.completedMissions[key]={by:getPlayerUUID(), byName:playerName, xp:xpAmt, coin:coinAmt, ts:Date.now()};
+    room.players[getPlayerUUID()]={name:playerName, lastSeen:Date.now()};
+    await saveCoopRoomFallback(coopRoomCode, room);
+  }catch(e){}
+}
+function updateCoopHudStatus(room){
+  const el=document.getElementById('hudCoop');
+  if(!el || !coopRoomCode) return;
+  el.style.display='inline';
+  const pid=getPlayerUUID();
+  const others=Object.entries(room.players).filter(([id])=>id!==pid);
+  if(!others.length){ el.textContent='👥 '+coopRoomCode+' (SENDIRIAN)'; el.style.color='#888'; return; }
+  const now=Date.now();
+  const partner=others[0][1];
+  const online=(now-partner.lastSeen)<12000;
+  el.textContent='👥 '+coopRoomCode+' · '+partner.name+' '+(online?'ONLINE':'OFFLINE');
+  el.style.color=online?'var(--matrix-green)':'#888';
+}
+
+/* ================= PLAYER SAVE (DATABASE) =================
+   Same fallback order: MySQL via API -> Claude artifact storage ->
+   localStorage. The MySQL row is keyed by a UUID generated once per
+   browser (stored in localStorage), since there's no login system. */
+const SAVE_KEY='cyberguardian-save';
+let autosaveIv=null;
+async function saveProgress(){
+  const data={name:playerName, xp, coin, questCount, missionsDone, badges:[...badges], stats, wrongStats, lives, ts:Date.now()};
+  try{ await apiPostSave(getPlayerUUID(), playerName, data); }catch(e){ /* API not available */ }
+  try{ await window.storage.set(SAVE_KEY, JSON.stringify(data), false); }catch(e){}
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(data)); }catch(e){}
+}
+async function loadProgress(){
+  try{
+    const data = await apiGetSave(getPlayerUUID());
+    if(data) return data;
+  }catch(e){ /* API not available, fall through */ }
+  try{
+    const res=await window.storage.get(SAVE_KEY, false);
+    if(res && res.value) return JSON.parse(res.value);
+  }catch(e){}
+  try{
+    const raw=localStorage.getItem(SAVE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return null;
+}
+async function clearProgress(){
+  try{ await apiDeleteSave(getPlayerUUID()); }catch(e){}
+  try{ await window.storage.delete(SAVE_KEY, false); }catch(e){}
+  try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
+}
+async function checkContinueAvailable(){
+  const data=await loadProgress();
+  const btn=document.getElementById('continueBtn');
+  if(data && data.questCount>0 && data.questCount<TOTAL_MISSIONS){
+    btn.style.display='block';
+    btn.textContent='▶ LANJUTKAN — '+data.name+' ('+data.questCount+'/'+TOTAL_MISSIONS+')';
+  } else {
+    btn.style.display='none';
+  }
+}
+async function continueGame(){
+  const data=await loadProgress();
+  if(!data) return;
+  playerName=data.name;
+  document.getElementById('hudName').textContent=playerName;
+  xp=data.xp||0; coin=data.coin||0; questCount=data.questCount||0;
+  missionsDone={}; Object.keys(MISSIONS).forEach(k=>missionsDone[k]=!!(data.missionsDone&&data.missionsDone[k]));
+  badges=new Set(data.badges||[]);
+  stats=data.stats||{phishing:0, malware:0, serverDown:0};
+  wrongStats=data.wrongStats||{};
+  lives=(data.lives!=null)?data.lives:maxLives;
+  player.x=11*TILE+15; player.y=11*TILE+15; player.dir='down';
+  allDoneAnnounced=questCount>=TOTAL_MISSIONS; bossStageIdx=0;
+  stations.forEach(s=>s.incident=false); activeIncident=null;
+  updateHUD();
+  gameStartTime=Date.now();
+  gameRunning=true; paused=false;
+  showScene('scene-game');
+  clearInterval(incidentTimer); scheduleIncidents();
+  clearInterval(autosaveIv); autosaveIv=setInterval(()=>{ if(gameRunning) saveProgress(); }, 15000);
+  document.getElementById('hudCoop').style.display = coopRoomCode ? 'inline' : 'none';
+  if(coopRoomCode) startCoopSync(); else stopCoopSync();
+  requestAnimationFrame(loop);
+}
+
+/* ================= LOADING ================= */
+function runLoading(){
+  showScene('scene-loading');
+  const fill=document.getElementById('loadFill');
+  fill.style.width='0%';
+  let p=0;
+  const iv=setInterval(()=>{
+    p+=Math.random()*22+8;
+    if(p>=100){ p=100; clearInterval(iv); fill.style.width='100%'; setTimeout(runIntro, 500); }
+    else fill.style.width=p+'%';
+  }, 220);
+}
+
+/* ================= INTRO / LIFT ================= */
+function drawMiniChar(svgEl){
+  svgEl.innerHTML = `
+    <rect x="9" y="18" width="16" height="24" rx="3" fill="#1c2733"/>
+    <rect x="9" y="18" width="16" height="24" rx="3" fill="none" stroke="#2f6fb0" stroke-width="1"/>
+    <path d="M11 20 L17 25 L23 20" fill="none" stroke="#2f6fb0" stroke-width="1.5"/>
+    <rect x="14" y="25" width="6" height="8" fill="#eef6ff"/>
+    <rect x="15" y="26" width="4" height="2" fill="#2f6fb0"/>
+    <circle cx="17" cy="10" r="9" fill="#e8a26e"/>
+    <path d="M8 10 Q6 -3 17 -1 Q28 -3 26 10 Q26 3 17 5 Q8 3 8 10Z" fill="#22201d"/>
+    <circle cx="10" cy="0" r="4.5" fill="#22201d"/><circle cx="17" cy="-3" r="5" fill="#22201d"/><circle cx="24" cy="0" r="4.5" fill="#22201d"/>
+    <rect x="9" y="40" width="6" height="10" fill="#0c1218"/>
+    <rect x="19" y="40" width="6" height="10" fill="#0c1218"/>
+  `;
+}
+function runIntro(){
+  showScene('scene-intro');
+  const doorL=document.getElementById('doorL'), doorR=document.getElementById('doorR');
+  const liftChar=document.getElementById('liftChar'), dialog=document.getElementById('managerDialog');
+  const startBtn=document.getElementById('startWorkBtn');
+  doorL.classList.remove('open'); doorR.classList.remove('open');
+  dialog.classList.remove('show'); startBtn.style.display='none';
+  liftChar.style.left='50%';
+  drawMiniChar(liftChar);
+  setTimeout(()=>{
+    doorL.classList.add('open'); doorR.classList.add('open');
+    beep(200,.3,'sine');
+    setTimeout(()=>{ liftChar.style.left='30%'; },300);
+    setTimeout(()=>{ dialog.classList.add('show'); }, 1600);
+    setTimeout(()=>{ startBtn.style.display='inline-block'; }, 2400);
+  }, 900);
+}
+function beginGame(){ showScene('scene-game'); initGame(); }
+
+/* ================= GAME: MAP DATA ================= */
+const TILE=30, COLS=24, ROWS=18;
+const rooms=[
+  // top row
+  {x:0,y:0,w:6,h:5,label:'MEETING ROOM',color:'#3a3226'},
+  {x:6,y:0,w:6,h:5,label:'MANAGER ROOM',color:'#452020'},
+  {x:12,y:0,w:6,h:5,label:'PROGRAMMER ROOM',color:'#2e3a44'},
+  {x:18,y:0,w:6,h:5,label:'NETWORK ROOM',color:'#2e3a44'},
+  // middle row
+  {x:0,y:5,w:6,h:8,label:'IT SUPPORT',color:'#274536'},
+  {x:6,y:5,w:12,h:8,label:'LOBBY',color:'#c9b78e',dark:true},
+  {x:18,y:5,w:6,h:8,label:'SERVER ROOM',color:'#212a38'},
+  // bottom row
+  {x:0,y:13,w:6,h:5,label:'CCTV ROOM',color:'#161b26'},
+  {x:6,y:13,w:6,h:5,label:'DATA CENTER',color:'#454c54',dark:true},
+  {x:12,y:13,w:6,h:5,label:'PANTRY / BREAK',color:'#37424f'},
+  {x:18,y:13,w:6,h:5,label:'DIRECTOR ROOM',color:'#452020'},
+];
+const obstacles=[ // collidable furniture / decor, tile coords
+  // meeting
+  {x:1,y:1,w:4,h:2,color:'#3d2a18'},
+  // manager
+  {x:8,y:2,w:3,h:1,color:'#3d2a18'},
+  {x:10,y:0,w:2,h:1,color:'#2b1f14'},
+  // programmer
+  {x:13,y:2,w:2,h:1,color:'#2b3644'},
+  {x:16,y:2,w:2,h:1,color:'#2b3644'},
+  // network
+  {x:22,y:3,w:1,h:1,color:'#12161c'},
+  // it support
+  {x:1,y:10,w:4,h:1,color:'#2b3644'},
+  // lobby signage / fixtures (moved down off the y=5 door line so they no
+  // longer block the Manager/Programmer doorways)
+  {x:8,y:7,w:6,h:1,color:'#d8d2c2',label:'PUSRI IT DIVISION',labelColor:'#1c3f66'},
+  {x:14,y:6,w:2,h:2,color:'#22262e',label:'2',labelColor:'#00E5FF'},
+  {x:16,y:6,w:1,h:3,color:'#4a3c2e',label:'DOWN',labelColor:'#EAF6FF'},
+  {x:9,y:10,w:4,h:1,color:'#1c2430'},
+  {x:7,y:6,w:1,h:1,color:'#2f5c3a'},
+  {x:16,y:9,w:1,h:1,color:'#2f5c3a'},
+  // server decor
+  {x:22,y:6,w:1,h:2,color:'#12161c'},
+  {x:22,y:9,w:1,h:2,color:'#12161c'},
+  // cctv
+  {x:1,y:15,w:4,h:1,color:'#232a36'},
+  // data center
+  {x:7,y:14,w:1,h:3,color:'#12161c'},
+  {x:10,y:14,w:1,h:3,color:'#12161c'},
+  // pantry
+  {x:13,y:15,w:4,h:2,color:'#3d2a18'},
+  // director
+  {x:20,y:15,w:3,h:1,color:'#3d2a18'},
+];
+
+/* ---- room walls with door gaps, so the character has to walk through the
+   doors shown in the office floor-plan artwork instead of crossing walls ---- */
+function hWallSegs(y, x0, x1, doors){ // horizontal wall at tile-row y, gaps = doors
+  const segs=[]; let cx=x0;
+  for(const [d0,d1] of doors.slice().sort((a,b)=>a[0]-b[0])){
+    if(d0>cx) segs.push({x:cx, y:y-0.15, w:d0-cx, h:0.3});
+    cx=Math.max(cx,d1);
+  }
+  if(cx<x1) segs.push({x:cx, y:y-0.15, w:x1-cx, h:0.3});
+  return segs;
+}
+function vWallSegs(x, y0, y1, doors){ // vertical wall at tile-col x, gaps = doors
+  const segs=[]; let cy=y0;
+  for(const [d0,d1] of doors.slice().sort((a,b)=>a[0]-b[0])){
+    if(d0>cy) segs.push({x:x-0.15, y:cy, w:0.3, h:d0-cy});
+    cy=Math.max(cy,d1);
+  }
+  if(cy<y1) segs.push({x:x-0.15, y:cy, w:0.3, h:y1-cy});
+  return segs;
+}
+const walls=[
+  // row1 / row2 boundary — door into Meeting, Manager, Programmer, Network
+  ...hWallSegs(5, 0, 24, [[2,4],[8,10],[14,16],[19,21]]),
+  // row2 / row3 boundary — door into IT Support→CCTV, Lobby→Data Center, Lobby→Pantry, Server→Director
+  ...hWallSegs(13, 0, 24, [[2,4],[7,9],[14,16],[20,22]]),
+  // IT Support <-> Lobby door
+  ...vWallSegs(6, 5, 13, [[9,11]]),
+  // Lobby <-> Server Room door
+  ...vWallSegs(18, 5, 13, [[9,11]]),
+];
+
+const stations=[
+  {id:'network', name:'NETWORK ROOM', tx:20, ty:1, tw:3, th:1, color:'#00E5FF'},
+  {id:'itsupport', name:'HELPDESK', tx:1, ty:7, tw:3, th:1, color:'#00FF88'},
+  {id:'server', name:'SERVER ROOM', tx:19, ty:7, tw:3, th:2, color:'#B026FF'},
+  {id:'programmer', name:'PROGRAMMER ROOM', tx:13, ty:3, tw:3, th:1, color:'#2f6fb0'},
+  {id:'cctv', name:'CCTV ROOM', tx:1, ty:16, tw:3, th:1, color:'#ff8c42'},
+  {id:'datacenter', name:'DATA CENTER', tx:8, ty:15, tw:2, th:1, color:'#ffd166'},
+  {id:'manager', name:'MANAGER ROOM', tx:7, ty:3, tw:3, th:1, color:'#ff5e78'},
+  {id:'director', name:'DIRECTOR ROOM', tx:19, ty:16, tw:3, th:1, color:'#FF3860'},
+];
+
+/* ---- NPCs: one idle character per room, drawn in the same sprite style as the player ---- */
+const PLAYER_COLORS={skin:'#e8a26e', hair:'#22201d', jacket:'#1c2733', jacketTrim:'#2f6fb0', pants:'#141c26', shoe:'#0c1218'};
+const npcs=[
+  {px:3.2*TILE, py:2.6*TILE, dir:'down', name:'Rina', role:'Peserta Meeting',
+    colors:{skin:'#d99a6c', hair:'#3a2416', jacket:'#5a3d2b', jacketTrim:'#e0b27a', pants:'#5a3d2b', shoe:'#141008', gender:'female'},
+    greet:'"Meeting hari ini soal keamanan email, ya."'},
+  {px:11.2*TILE, py:1.4*TILE, dir:'down', name:'Pak Herman', role:'Manager',
+    colors:{skin:'#e8b48a', hair:'#3a3a3a', jacket:'#3a1c1c', jacketTrim:'#8a3a3a', pants:'#1c1414', shoe:'#0c0808'},
+    greet:'"Tolong laporan hariannya disiapkan ya."'},
+  {px:14.5*TILE, py:1.4*TILE, dir:'down', name:'Dimas', role:'Programmer',
+    colors:{skin:'#c98a5e', hair:'#161616', jacket:'#1f2e3a', jacketTrim:'#3fa9e0', pants:'#12181e', shoe:'#0a0e12'},
+    greet:'"Password lama masih dipakai banyak orang nih."'},
+  {px:19.5*TILE, py:3.6*TILE, dir:'down', name:'Tono', role:'Network Admin',
+    colors:{skin:'#e8a26e', hair:'#20180f', jacket:'#0f3a3a', jacketTrim:'#00E5FF', pants:'#0a1a1a', shoe:'#050f0f'},
+    greet:'"Koneksi kantor sempat putus-putus tadi."'},
+  {px:4.2*TILE, py:6.2*TILE, dir:'down', name:'Sari', role:'IT Support',
+    colors:{skin:'#d99a6c', hair:'#4a3220', jacket:'#123a26', jacketTrim:'#4fe0a8', pants:'#123a26', shoe:'#060c08', gender:'female'},
+    greet:'"Ada laporan phishing masuk pagi ini."'},
+  {px:10.4*TILE, py:8.2*TILE, dir:'down', name:'Yoga', role:'Staff Lobby',
+    colors:{skin:'#c98a5e', hair:'#241a10', jacket:'#4a4030', jacketTrim:'#d8c28a', pants:'#20180e', shoe:'#0c0a06'},
+    greet:'"Selamat datang di PUSRI IT Division!"'},
+  {px:20.4*TILE, py:11.2*TILE, dir:'down', name:'Bagus', role:'Server Engineer',
+    colors:{skin:'#e8b48a', hair:'#181818', jacket:'#2a1c3a', jacketTrim:'#B026FF', pants:'#160e1e', shoe:'#0a060e'},
+    greet:'"Suhu server sempat naik tadi malam."'},
+  {px:1.4*TILE, py:14.4*TILE, dir:'down', name:'Wati', role:'CCTV Operator',
+    colors:{skin:'#d99a6c', hair:'#241610', jacket:'#3a2e1c', jacketTrim:'#ffab6b', pants:'#3a2e1c', shoe:'#0c0906', gender:'female'},
+    greet:'"Coba periksa rekaman semalam, ada yang aneh."'},
+  {px:11.4*TILE, py:14.4*TILE, dir:'down', name:'Farid', role:'Data Center Staff',
+    colors:{skin:'#c98a5e', hair:'#141414', jacket:'#3a3420', jacketTrim:'#ffd166', pants:'#1a170e', shoe:'#0a0805'},
+    greet:'"Storage data center hampir penuh lho."'},
+  {px:16.4*TILE, py:17.2*TILE, dir:'down', name:'Made', role:'Karyawan',
+    colors:{skin:'#e8a26e', hair:'#241a10', jacket:'#2e3a3a', jacketTrim:'#7ab8b0', pants:'#161e1e', shoe:'#080e0e'},
+    greet:'"Lagi break dulu, ngopi bentar."'},
+  {px:19.4*TILE, py:14.4*TILE, dir:'down', name:'Bu Wulan', role:'Direktur',
+    colors:{skin:'#e8b48a', hair:'#2c1a1a', jacket:'#3a1c1c', jacketTrim:'#ff7a94', pants:'#3a1c1c', shoe:'#0c0606', gender:'female'},
+    greet:'"Saya tunggu laporan semua divisi."'},
+];
+function npcRectPx(n){ return {x:n.px-9, y:n.py-9, w:18, h:20}; }
+
+/* ---- NPC wandering: tiap NPC jalan pelan-pelan di dalam ruangan tempat
+   dia ditaruh (bukan lintas ruangan), berhenti sebentar, lalu jalan lagi
+   ke titik acak berikutnya. Tetap menghindari tembok/furniture/meja
+   stasiun/pemain/NPC lain lewat pengecekan collides() yang sama dipakai
+   pemain. ---- */
+function npcHomeRoom(n){
+  for(const r of rooms){
+    const rx=r.x*TILE, ry=r.y*TILE, rw=r.w*TILE, rh=r.h*TILE;
+    if(n.px>=rx && n.px<=rx+rw && n.py>=ry && n.py<=ry+rh) return {x:rx,y:ry,w:rw,h:rh};
+  }
+  return {x:n.px-40, y:n.py-40, w:80, h:80};
+}
+function npcCanMove(n, nx, ny){
+  const pw=18, ph=18, half=pw/2;
+  const left=nx-half, top=ny-half;
+  const home=n.home, margin=16;
+  if(left<home.x+margin || top<home.y+margin || left+pw>home.x+home.w-margin || top+ph>home.y+home.h-margin) return false;
+  for(const w of walls){ if(collides(left,top,pw,ph, tileRectPx(w))) return false; }
+  for(const o of obstacles){ if(collides(left,top,pw,ph, tileRectPx(o))) return false; }
+  for(const s of stations){ if(collides(left,top,pw,ph, tileRectPx(s))) return false; }
+  if(collides(left,top,pw,ph, {x:player.x-9,y:player.y-9,w:18,h:20})) return false;
+  for(const other of npcs){ if(other===n) continue; if(collides(left,top,pw,ph, npcRectPx(other))) return false; }
+  return true;
+}
+npcs.forEach(n=>{
+  n.home=npcHomeRoom(n);
+  n.tx=n.px; n.ty=n.py;
+  n.waitT=60+Math.floor(Math.random()*150);
+  n.animT=0;
+  n.speed=0.45+Math.random()*0.25; // pelan-pelan, tiap NPC beda kecepatan dikit
+});
+function updateNPCs(){
+  for(const n of npcs){
+    const dx=n.tx-n.px, dy=n.ty-n.py, dist=Math.hypot(dx,dy);
+    if(dist<3){
+      n.animT=0;
+      if(n.waitT>0){ n.waitT--; continue; }
+      let found=false;
+      for(let tries=0; tries<6 && !found; tries++){
+        const home=n.home, margin=16;
+        const rx=home.x+margin+Math.random()*Math.max(1,(home.w-margin*2));
+        const ry=home.y+margin+Math.random()*Math.max(1,(home.h-margin*2));
+        if(npcCanMove(n, rx, ry)){ n.tx=rx; n.ty=ry; found=true; }
+      }
+      n.waitT=90+Math.floor(Math.random()*180);
+      if(!found){ n.tx=n.px; n.ty=n.py; }
+      continue;
+    }
+    const stepx=(dx/dist)*n.speed, stepy=(dy/dist)*n.speed;
+    const nx=n.px+stepx, ny=n.py+stepy;
+    if(npcCanMove(n, nx, n.py)) n.px=nx; else n.tx=n.px;
+    if(npcCanMove(n, n.px, ny)) n.py=ny; else n.ty=n.py;
+    if(Math.abs(stepx)>Math.abs(stepy)) n.dir = stepx>0?'right':'left';
+    else n.dir = stepy>0?'down':'up';
+    n.animT++;
+  }
+}
+
+/* ---- Mission registry: every mission belongs to a station ---- */
+const MISSIONS={
+  phishing:{station:'itsupport', name:'EMAIL PHISHING', xp:100, coin:20, type:'custom'},
+  sms:{station:'itsupport', name:'SMS PENIPUAN', xp:80, coin:15, type:'custom'},
+  motherscam:{station:'itsupport', name:'PENIPUAN MENGATASNAMAKAN BANK/CS', xp:90, coin:15, type:'custom'},
+  malware:{station:'itsupport', name:'SCAN MALWARE', xp:100, coin:20, type:'minigame', game:{title:'SCAN MALWARE', hits:5, time:60, theme:'easy'}},
+  password:{station:'programmer', name:'PASSWORD AUDIT', xp:100, coin:20, type:'custom', badge:'Password Master'},
+  update:{station:'programmer', name:'UPDATE SOFTWARE', xp:90, coin:15, type:'custom'},
+  intrusion:{station:'network', name:'TRACE INTRUSION', xp:100, coin:20, type:'minigame', game:{title:'TRACE INTRUSION', hits:5, time:60, theme:'medium'}},
+  internetdown:{station:'network', name:'INTERNET MATI', xp:150, coin:25, type:'custom'},
+  firewall:{station:'server', name:'PATCH FIREWALL', xp:100, coin:20, type:'minigame', game:{title:'PATCH FIREWALL', hits:5, time:60, theme:'hard'}},
+  overheat:{station:'server', name:'SERVER OVERHEAT', xp:120, coin:20, type:'custom'},
+  backup:{station:'server', name:'BACKUP DATA', xp:100, coin:20, type:'custom'},
+  camera:{station:'cctv', name:'KAMERA OFFLINE', xp:90, coin:15, type:'custom'},
+  review:{station:'cctv', name:'REVIEW CCTV', xp:110, coin:20, type:'custom'},
+  storage:{station:'datacenter', name:'STORAGE HAMPIR PENUH', xp:100, coin:20, type:'custom'},
+  restore:{station:'datacenter', name:'RESTORE BACKUP', xp:120, coin:25, type:'custom', badge:'Backup Expert'},
+  report:{station:'manager', name:'LAPORAN HARIAN', xp:100, coin:20, type:'custom'},
+};
+let TOTAL_MISSIONS=Object.keys(MISSIONS).length;
+
+/* ================= KUIS TAMBAHAN DARI ADMIN (terpisah dari file game) =================
+   Admin menambah/mengubah soal lewat panel admin/ yang terpisah dari file HTML ini.
+   Game memuat bank soal itu lewat admin/api.php (read-only, action=list) saat boot.
+   Ada 2 mode soal dari admin:
+   1) "Ganti misi bawaan" (replace_key diisi salah satu REPLACEABLE_MISSIONS) — soal ini
+      MENGGANTIKAN konten misi bawaan yang sudah ada (mis. ganti isi "Email Phishing"),
+      tanpa menambah jumlah total misi. Kalau soal ini dihapus lagi di admin, misi
+      otomatis kembali ke versi bawaan (fallback aman).
+   2) Soal baru tanpa replace_key — ditambahkan sebagai misi BARU di ruangan terkait.
+   Kalau API tidak bisa diakses (offline/belum dipasang), game tetap jalan normal
+   dengan misi bawaan saja — tidak ada yang rusak. */
+const ADMIN_API_BASE='admin/api.php';
+const REPLACEABLE_MISSIONS=['phishing','sms','motherscam','update','internetdown','overheat','backup','camera','review','storage','restore'];
+let extQuizLoaded=false;
+async function loadExternalQuizzes(){
+  try{
+    const res=await fetch(ADMIN_API_BASE+'?action=list');
+    if(!res.ok) throw new Error('admin_api_unavailable');
+    const data=await res.json();
+    const list=Array.isArray(data.questions)?data.questions:[];
+    list.forEach(q=>{
+      if(q.replace_key && REPLACEABLE_MISSIONS.includes(q.replace_key) && MISSIONS[q.replace_key]){
+        const orig=MISSIONS[q.replace_key];
+        MISSIONS[q.replace_key]=Object.assign({}, orig, {
+          name:q.category_label||orig.name, xp:q.xp||orig.xp, coin:q.coin||orig.coin,
+          type:'extquiz', quiz:q
+        });
+        return;
+      }
+      if(!q.id || !q.station || !STATION_LABEL_KEYS.includes(q.station)) return;
+      const key='ext_'+q.id;
+      MISSIONS[key]={station:q.station, name:q.category_label||'KUIS TAMBAHAN', xp:q.xp||80, coin:q.coin||15, type:'extquiz', quiz:q};
+    });
+    TOTAL_MISSIONS=Object.keys(MISSIONS).length;
+  }catch(e){ /* admin API belum dipasang / tidak bisa diakses — abaikan, game tetap jalan */ }
+  extQuizLoaded=true;
+}
+const STATION_LABEL_KEYS=['itsupport','programmer','network','server','cctv','datacenter','manager'];
+loadExternalQuizzes();
+const STATION_BADGE={network:'Network Hero', server:'Firewall Defender'};
+const LEVELS=['INTERN','JUNIOR IT','JUNIOR SECURITY','SECURITY ANALYST','SOC ANALYST','SENIOR SECURITY','CYBER SPECIALIST','CHIEF SECURITY OFFICER'];
+function levelForCount(c){ return LEVELS[Math.min(LEVELS.length-1, Math.floor(c/2))]; }
+
+/* ---- shop ---- */
+const SHOP_ITEMS=[
+  {id:'laptop', name:'Laptop Baru', price:150},
+  {id:'skin', name:'Skin Karakter', price:80},
+  {id:'keyboard', name:'Keyboard Custom', price:60},
+  {id:'monitor', name:'Monitor Ekstra', price:100},
+  {id:'bag', name:'Tas Kerja', price:50},
+  {id:'cap', name:'Topi', price:40},
+  {id:'shirt', name:'Baju Tim', price:45},
+];
+let owned=new Set();
+
+/* ---- dynamic incident system ---- */
+const INCIDENT_FLAVORS={
+  itsupport:'LAPORAN PHISHING BARU MASUK',
+  server:'ALARM SUHU TINGGI DI SERVER ROOM',
+  network:'KONEKSI JARINGAN TERPUTUS',
+  programmer:'PEMBARUAN KEAMANAN GAGAL',
+  cctv:'BEBERAPA KAMERA KEHILANGAN KONEKSI',
+};
+let incidentTimer=null, activeIncident=null;
+
+let missionsDone={}, xp=0, coin=0, questCount=0, badges=new Set(), allDoneAnnounced=false;
+let lives=5, maxLives=5;
+/* ---- MABAR (CO-OP) state: room code hanya di memori, tidak ikut disimpan ke save-game ---- */
+let coopRoomCode=null, coopPollIv=null, coopLobbyPollIv=null;
+let coopPartner=null; // {id,name,x,y,tx,ty,dir,lastSeen} — posisi pasangan buat mode "1 dunia"
+const PARTNER_COLORS={skin:'#e8b48a', hair:'#2c1a1a', jacket:'#7a1f3a', jacketTrim:'#ff5e78', pants:'#2a1018', shoe:'#100608'};
+let stats={phishing:0, malware:0, serverDown:0};
+/* ---- pelacakan kesalahan per kategori/divisi, buat deteksi kelemahan user ---- */
+let wrongStats={};
+const STATION_LABEL={
+  itsupport:'Deteksi Phishing & Penipuan Online', programmer:'Keamanan Password & Update Software',
+  network:'Keamanan Jaringan', server:'Keamanan Server & Firewall',
+  cctv:'Pengawasan CCTV', datacenter:'Manajemen & Backup Data', manager:'Pelaporan'
+};
+function markWrong(key){
+  const m=MISSIONS[key];
+  if(m) wrongStats[m.station]=(wrongStats[m.station]||0)+1;
+}
+function weakestCategory(){
+  let bestId=null, bestN=0;
+  Object.keys(wrongStats).forEach(id=>{ if(wrongStats[id]>bestN){ bestN=wrongStats[id]; bestId=id; } });
+  return bestN>0 ? {id:bestId, label:STATION_LABEL[bestId]||bestId, count:bestN} : null;
+}
+function weaknessSummaryHTML(){
+  const w=weakestCategory();
+  if(!w) return '<div style="margin-top:10px;color:var(--matrix-green);">Tidak ada kesalahan tercatat — kerja bagus!</div>';
+  return '<div style="margin-top:10px;color:var(--warn-red);">Kategori paling perlu ditingkatkan: <b>'+w.label+'</b> ('+w.count+'x kesalahan)</div>';
+}
+let bossStageIdx=0;
+const BOSS_STAGES=[
+  {key:'email', title:'EMAIL — BLOKIR PHISHING', hits:4, time:50, theme:'easy'},
+  {key:'malware', title:'MALWARE — SCAN CEPAT', hits:5, time:55, theme:'easy'},
+  {key:'password', title:'PASSWORD — GANTI CEPAT', hits:4, time:50, theme:'medium'},
+  {key:'network', title:'NETWORK — TUTUP CELAH', hits:5, time:55, theme:'medium'},
+  {key:'server', title:'SERVER — STABILKAN', hits:6, time:60, theme:'hard'},
+];
+
+const canvas=document.getElementById('gameCanvas'), ctx=canvas.getContext('2d');
+/* office floor-plan background image (drawn behind rooms/stations/characters) */
+let bgReady=false;
+const bgImg=new Image();
+bgImg.onload=()=>{ bgReady=true; };
+bgImg.src='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAQDAwQDAwQEAwQFBAQFBgoHBgYGBg0JCggKDw0QEA8NDw4RExgUERIXEg4PFRwVFxkZGxsbEBQdHx0aHxgaGxr/2wBDAQQFBQYFBgwHBwwaEQ8RGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhr/wAARCALQA8ADASIAAhEBAxEB/8QAHQAAAAcBAQEAAAAAAAAAAAAAAQIDBAUGBwAICf/EAGgQAAEDAgQDBAQHCQcQBwYDCQECAxEABAUSITEGE0EHIlFhFCMycRUWQoGRodEXJDNSYrHB0uElNENTcpLTCCY3RFRjZHOCk6KjsrPC8FV0g4SUk8ThJkRVVpO1wtP/xAAbAQACAwEBAQAAAAAAAAAAAAAAAQIDBAUGB//EADkRAAIBAgQDBgQGAQMEAwEAAAABAgMRBBIhMRNBURQiMmFxBYGR8BShscHR4UJSYvEVMxYkcoL/2gAMAwEAAhEDEQA/APLPA3ZexxjgT2M3WL+gtJujastNpCgTlS4VqWogAdwQASSQYjWSc+RdK4L7TuHbXi/Grx/CcLurZu4U4QpLDiLZBSDGokKmNfj7+aN9hSknsMvJkA441MCQf3k1pVY+4d2e/wD4/wD1E1a5JbghVzscwnIUucRKUoJzA+hIH/iOD+qr9JNvsVwdpTfM4rUjMhS5/Zq5R3SdRmGsSPnqS+wd2eoBJ441JH/RDVF+wc2QPiwYj/ohqlxIrYY9+xbBQr1fEIBT0jDkkeX8Kqdo7LsLSlAVxUsKGpAsEaeX8Mabc1QxBHOKrwc22jC2i0m3P4mlyHdjf7D9gFZ2+LH3FaAlWHNZRuT/AAvnSJ7KbBJKm+JGyVwIFm5qABJ/DU6TjdoHMuLbyx0C0PFRnTMC2JyyQBmCszhII2Okx8i7L7MVYzhmH4ncPa4lcJuWUDDC280oLJjPmUggweo9xqWeHULMhVdlrC1KbXi5XzEpDi3jZD1S4EiJ1GtIPdjmHnVWIwogkaLXH+uR99W3EsOdu8BwtdzisKZurVbK3cBCWnVh1RfezlyQoqBOcEASO6o1FcRXrFv2X2FzZ4g41iKXsAITcYmXW73n3WUsm3cKEtqKg0CMoAM66RUXOF9GSUZWuVU9i+GSkmxZUDmOZ1STokidwD1HT7KA9h1mAA1btBfcMZ1nKJ2I1GdPU/9qvryceRc4cy/iOOYgzmdwu7DzK23WxgshFyhtOcqPOW68MukbE6UwwHjkMYFiyOI8XRd3arwIuLR3E1LvcI5riHKpCvsFAShLrSH+4MjoJGUwYI1BmpGaWjI9PZRlGa7YbCemQHf/wCQn76D7CtqkKKGmUGEp/PmeVJUNdZ1HInbSSOlaPiNnw9jWD9nuHcPjElYfes3dml1jDVpWG2FqeUgqWX3BPNCS
