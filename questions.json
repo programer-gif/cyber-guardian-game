@@ -1,0 +1,1152 @@
+[
+  {
+    "d": "easy",
+    "q": "Apa fungsi utama password Wi-Fi di rumah?",
+    "exp": "Password mencegah orang lain memakai jaringan tanpa izin.",
+    "c": [
+      {
+        "t": "Mencegah orang lain memakai internet tanpa izin",
+        "ok": true
+      },
+      {
+        "t": "Membuat sinyal Wi-Fi lebih cepat",
+        "ok": false
+      },
+      {
+        "t": "Menambah jumlah perangkat yang bisa terhubung",
+        "ok": false
+      },
+      {
+        "t": "Mengubah warna lampu router",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "easy",
+    "q": "Kenapa sebaiknya password bawaan (default) router diganti?",
+    "exp": "Password default biasanya mudah ditebak/dicari tahu orang lain.",
+    "c": [
+      {
+        "t": "Karena mudah ditebak orang lain",
+        "ok": true
+      },
+      {
+        "t": "Karena warna router jadi pudar",
+        "ok": false
+      },
+      {
+        "t": "Karena membuat WiFi jadi mahal",
+        "ok": false
+      },
+      {
+        "t": "Karena router jadi lebih berat",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "easy",
+    "q": "Apa itu phishing?",
+    "exp": "Phishing adalah penipuan lewat pesan/email palsu untuk mencuri data pribadi.",
+    "c": [
+      {
+        "t": "Upaya menipu orang lewat email/pesan palsu agar memberi data pribadi",
+        "ok": true
+      },
+      {
+        "t": "Aplikasi untuk mempercepat internet",
+        "ok": false
+      },
+      {
+        "t": "Virus yang merusak hardware komputer",
+        "ok": false
+      },
+      {
+        "t": "Teknik memancing ikan",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "easy",
+    "q": "Mana ciri umum email/pesan phishing?",
+    "exp": "Phishing sering mendesak korban klik link atau memberi data pribadi.",
+    "c": [
+      {
+        "t": "Meminta klik link mencurigakan atau data pribadi secara mendesak",
+        "ok": true
+      },
+      {
+        "t": "Dikirim dari alamat teman lama",
+        "ok": false
+      },
+      {
+        "t": "Berisi foto liburan",
+        "ok": false
+      },
+      {
+        "t": "Tidak memakai subjek email",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "easy",
+    "q": "Ada WhatsApp dari nomor tak dikenal minta kode OTP. Apa yang sebaiknya dilakukan?",
+    "exp": "Kode OTP tidak boleh diberikan ke siapapun, termasuk yang mengaku petugas resmi.",
+    "c": [
+      {
+        "t": "Jangan pernah memberikan kode OTP ke siapapun",
+        "ok": true
+      },
+      {
+        "t": "Kirim langsung karena diminta dengan sopan",
+        "ok": false
+      },
+      {
+        "t": "Kirim lalu blokir nomornya",
+        "ok": false
+      },
+      {
+        "t": "Teruskan ke grup keluarga dulu",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "easy",
+    "q": "OTP adalah singkatan dari...",
+    "exp": "OTP = One Time Password, kode sekali pakai untuk verifikasi.",
+    "c": [
+      {
+        "t": "One Time Password",
+        "ok": true
+      },
+      {
+        "t": "Online Transfer Payment",
+        "ok": false
+      },
+      {
+        "t": "Official Text Protocol",
+        "ok": false
+      },
+      {
+        "t": "Open Type Process",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "easy",
+    "q": "Untuk transaksi penting seperti mobile banking, sebaiknya pakai jaringan apa?",
+    "exp": "Wi-Fi publik lebih berisiko untuk aktivitas sensitif, gunakan data seluler pribadi.",
+    "c": [
+      {
+        "t": "Data seluler pribadi, hindari Wi-Fi publik",
+        "ok": true
+      },
+      {
+        "t": "Wi-Fi publik kapan saja",
+        "ok": false
+      },
+      {
+        "t": "Wi-Fi tetangga tanpa izin",
+        "ok": false
+      },
+      {
+        "t": "Tidak masalah pakai jaringan apapun",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "easy",
+    "q": "Ikon gembok di alamat website (https) menandakan...",
+    "exp": "Gembok menandakan koneksi ke situs terenkripsi.",
+    "c": [
+      {
+        "t": "Koneksi ke situs tersebut terenkripsi/aman",
+        "ok": true
+      },
+      {
+        "t": "Situs pasti tidak bisa diretas",
+        "ok": false
+      },
+      {
+        "t": "Situs tersebut gratis",
+        "ok": false
+      },
+      {
+        "t": "Situs berbahasa Inggris",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "easy",
+    "q": "Kenapa perlu rutin update aplikasi dan sistem operasi?",
+    "exp": "Update menutup celah keamanan yang bisa dimanfaatkan penjahat siber.",
+    "c": [
+      {
+        "t": "Menutup celah keamanan yang bisa dimanfaatkan penjahat siber",
+        "ok": true
+      },
+      {
+        "t": "Supaya HP terasa lebih berat",
+        "ok": false
+      },
+      {
+        "t": "Supaya baterai lebih boros",
+        "ok": false
+      },
+      {
+        "t": "Tidak penting sama sekali",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "easy",
+    "q": "Password yang kuat sebaiknya seperti apa?",
+    "exp": "Password kuat: panjang dan kombinasi karakter beragam.",
+    "c": [
+      {
+        "t": "Panjang, gabungan huruf besar-kecil, angka, dan simbol",
+        "ok": true
+      },
+      {
+        "t": "Nama sendiri saja",
+        "ok": false
+      },
+      {
+        "t": "Angka 123456",
+        "ok": false
+      },
+      {
+        "t": "Sama untuk semua akun",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "easy",
+    "q": "Kenapa tidak boleh pakai password yang sama untuk semua akun?",
+    "exp": "Jika satu akun bocor, akun lain memakai password sama ikut terancam.",
+    "c": [
+      {
+        "t": "Kalau satu akun bocor, akun lain ikut berisiko",
+        "ok": true
+      },
+      {
+        "t": "Supaya HP tidak lemot",
+        "ok": false
+      },
+      {
+        "t": "Supaya kuota internet lebih hemat",
+        "ok": false
+      },
+      {
+        "t": "Tidak masalah, aman-aman saja",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "easy",
+    "q": "Apa gunanya fitur Two-Factor Authentication (2FA)?",
+    "exp": "2FA menambah lapisan verifikasi selain password.",
+    "c": [
+      {
+        "t": "Menambah lapisan keamanan login selain password",
+        "ok": true
+      },
+      {
+        "t": "Mempercepat loading aplikasi",
+        "ok": false
+      },
+      {
+        "t": "Menghemat kuota internet",
+        "ok": false
+      },
+      {
+        "t": "Mengganti nama pengguna otomatis",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "easy",
+    "q": "Dapat link \"Selamat, Anda menang undian!\" dari nomor tak dikenal. Apa yang sebaiknya dilakukan?",
+    "exp": "Link semacam ini biasanya penipuan, sebaiknya diabaikan/diblokir.",
+    "c": [
+      {
+        "t": "Tidak diklik, lalu blokir/laporkan nomornya",
+        "ok": true
+      },
+      {
+        "t": "Diklik karena penasaran",
+        "ok": false
+      },
+      {
+        "t": "Dibalas dengan data pribadi",
+        "ok": false
+      },
+      {
+        "t": "Diteruskan ke semua kontak",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "easy",
+    "q": "Sebelum menyambung ke Wi-Fi publik di kafe, apa yang perlu diperhatikan?",
+    "exp": "Pastikan nama jaringan benar dan hindari transaksi penting di Wi-Fi publik.",
+    "c": [
+      {
+        "t": "Pastikan nama jaringan benar dan hindari transaksi penting",
+        "ok": true
+      },
+      {
+        "t": "Langsung sambung ke semua jaringan yang terlihat",
+        "ok": false
+      },
+      {
+        "t": "Matikan antivirus dulu",
+        "ok": false
+      },
+      {
+        "t": "Aktifkan semua izin aplikasi",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "easy",
+    "q": "Apa itu \"Evil Twin\" pada Wi-Fi?",
+    "exp": "Evil Twin adalah Wi-Fi palsu yang meniru nama jaringan asli untuk menipu korban.",
+    "c": [
+      {
+        "t": "Jaringan Wi-Fi palsu yang meniru nama jaringan asli",
+        "ok": true
+      },
+      {
+        "t": "Router dengan dua antena",
+        "ok": false
+      },
+      {
+        "t": "Aplikasi penguat sinyal",
+        "ok": false
+      },
+      {
+        "t": "Fitur penghemat baterai router",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "easy",
+    "q": "Kenapa penting mengunci layar HP/laptop saat ditinggal?",
+    "exp": "Mengunci layar mencegah orang lain mengakses data tanpa izin.",
+    "c": [
+      {
+        "t": "Mencegah orang lain mengakses data tanpa izin",
+        "ok": true
+      },
+      {
+        "t": "Membuat baterai lebih awet",
+        "ok": false
+      },
+      {
+        "t": "Mempercepat pengisian daya",
+        "ok": false
+      },
+      {
+        "t": "Tidak ada gunanya",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "easy",
+    "q": "Ada telepon mengaku dari \"bank\" minta kode OTP. Apa yang benar?",
+    "exp": "Bank resmi tidak pernah meminta OTP lewat telepon/chat.",
+    "c": [
+      {
+        "t": "Tidak diberikan, bank resmi tidak pernah minta OTP lewat telepon",
+        "ok": true
+      },
+      {
+        "t": "Diberikan karena mengaku petugas resmi",
+        "ok": false
+      },
+      {
+        "t": "Diberikan setelah ditanya nama lengkap",
+        "ok": false
+      },
+      {
+        "t": "Diberikan jika nomornya terlihat resmi",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "easy",
+    "q": "Apa gunanya rutin membuat backup data?",
+    "exp": "Backup mencegah kehilangan data total jika perangkat rusak atau kena ransomware.",
+    "c": [
+      {
+        "t": "Supaya data tidak hilang total jika perangkat rusak",
+        "ok": true
+      },
+      {
+        "t": "Supaya penyimpanan HP terlihat penuh",
+        "ok": false
+      },
+      {
+        "t": "Supaya baterai lebih boros",
+        "ok": false
+      },
+      {
+        "t": "Tidak ada manfaatnya",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "easy",
+    "q": "QR code dari sumber tak dikenal di tempat umum sebaiknya diapakan?",
+    "exp": "QR code tak dikenal bisa mengarah ke situs berbahaya.",
+    "c": [
+      {
+        "t": "Tidak langsung dipindai, karena bisa mengarah ke situs berbahaya",
+        "ok": true
+      },
+      {
+        "t": "Selalu dipindai agar praktis",
+        "ok": false
+      },
+      {
+        "t": "Difoto lalu disebar ke media sosial",
+        "ok": false
+      },
+      {
+        "t": "Dijadikan wallpaper HP",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "easy",
+    "q": "Kenapa nama Wi-Fi (SSID) sebaiknya tidak memakai nama lengkap/alamat pemilik?",
+    "exp": "Menghindari orang asing mudah tahu identitas pemilik jaringan.",
+    "c": [
+      {
+        "t": "Supaya orang asing tidak mudah tahu identitas pemilik jaringan",
+        "ok": true
+      },
+      {
+        "t": "Supaya sinyal Wi-Fi lebih kencang",
+        "ok": false
+      },
+      {
+        "t": "Supaya kuota internet bertambah",
+        "ok": false
+      },
+      {
+        "t": "Tidak ada alasan khusus",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "medium",
+    "q": "Standar enkripsi Wi-Fi yang lebih aman dibanding WEP adalah...",
+    "exp": "WPA2/WPA3 jauh lebih aman dibanding WEP yang sudah usang.",
+    "c": [
+      {
+        "t": "WPA2/WPA3",
+        "ok": true
+      },
+      {
+        "t": "WEP",
+        "ok": false
+      },
+      {
+        "t": "FTP",
+        "ok": false
+      },
+      {
+        "t": "HTTP",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "medium",
+    "q": "Kenapa WEP dianggap sudah tidak aman untuk router modern?",
+    "exp": "Enkripsi WEP mudah dibobol dengan alat yang tersedia luas.",
+    "c": [
+      {
+        "t": "Enkripsinya mudah dibobol dengan alat yang tersedia luas",
+        "ok": true
+      },
+      {
+        "t": "Terlalu boros kuota internet",
+        "ok": false
+      },
+      {
+        "t": "Membuat koneksi lemot",
+        "ok": false
+      },
+      {
+        "t": "Tidak kompatibel dengan HP baru",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "medium",
+    "q": "Apa gunanya mengganti password admin router (bukan password Wi-Fi)?",
+    "exp": "Mencegah orang lain mengubah pengaturan router tanpa izin.",
+    "c": [
+      {
+        "t": "Mencegah orang lain mengubah pengaturan router tanpa izin",
+        "ok": true
+      },
+      {
+        "t": "Mempercepat koneksi internet",
+        "ok": false
+      },
+      {
+        "t": "Menambah jumlah perangkat yang bisa konek",
+        "ok": false
+      },
+      {
+        "t": "Mengganti warna lampu indikator router",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "medium",
+    "q": "Apa manfaat fitur \"Guest Network\" pada router?",
+    "exp": "Guest Network memberi akses internet ke tamu tanpa membagikan password Wi-Fi utama.",
+    "c": [
+      {
+        "t": "Memberi akses internet ke tamu tanpa membagikan password utama",
+        "ok": true
+      },
+      {
+        "t": "Mematikan Wi-Fi secara otomatis",
+        "ok": false
+      },
+      {
+        "t": "Menghemat listrik rumah",
+        "ok": false
+      },
+      {
+        "t": "Memblokir semua perangkat baru",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "medium",
+    "q": "Kenapa perangkat pintar (kamera CCTV, lampu pintar, dll) juga perlu password kuat?",
+    "exp": "Perangkat dengan password lemah/default bisa jadi celah masuk peretas ke jaringan rumah.",
+    "c": [
+      {
+        "t": "Bisa jadi celah masuk peretas ke jaringan rumah jika passwordnya lemah",
+        "ok": true
+      },
+      {
+        "t": "Supaya lampu lebih terang",
+        "ok": false
+      },
+      {
+        "t": "Supaya baterai tahan lama",
+        "ok": false
+      },
+      {
+        "t": "Tidak berpengaruh ke keamanan",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "medium",
+    "q": "Apa itu ransomware?",
+    "exp": "Ransomware mengunci/mengenkripsi data korban lalu meminta tebusan.",
+    "c": [
+      {
+        "t": "Malware yang mengunci data korban dan meminta tebusan",
+        "ok": true
+      },
+      {
+        "t": "Aplikasi pengelola keuangan",
+        "ok": false
+      },
+      {
+        "t": "Program antivirus gratis",
+        "ok": false
+      },
+      {
+        "t": "Fitur bawaan browser",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "medium",
+    "q": "Salah satu tanda perangkat mungkin terkena malware adalah...",
+    "exp": "Kinerja melambat drastis dan iklan tiba-tiba muncul terus adalah tanda umum malware.",
+    "c": [
+      {
+        "t": "Kinerja melambat drastis dan muncul iklan aneh terus-menerus",
+        "ok": true
+      },
+      {
+        "t": "Baterai baru saja terisi penuh",
+        "ok": false
+      },
+      {
+        "t": "Sinyal Wi-Fi terlihat kuat",
+        "ok": false
+      },
+      {
+        "t": "Aplikasi ter-update otomatis",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "medium",
+    "q": "Kenapa disarankan unduh aplikasi hanya dari toko resmi (Play Store/App Store)?",
+    "exp": "Toko resmi punya proses pemeriksaan sehingga risiko malware lebih rendah.",
+    "c": [
+      {
+        "t": "Risiko aplikasi berisi malware lebih rendah",
+        "ok": true
+      },
+      {
+        "t": "Aplikasinya selalu gratis",
+        "ok": false
+      },
+      {
+        "t": "Ukuran file selalu lebih kecil",
+        "ok": false
+      },
+      {
+        "t": "Tidak perlu koneksi internet",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "medium",
+    "q": "Sebelum memasang aplikasi baru, apa yang penting diperiksa?",
+    "exp": "Periksa izin (permission) yang diminta aplikasi sebelum memasangnya.",
+    "c": [
+      {
+        "t": "Izin (permission) apa saja yang diminta aplikasi",
+        "ok": true
+      },
+      {
+        "t": "Warna ikon aplikasi",
+        "ok": false
+      },
+      {
+        "t": "Jumlah huruf pada nama aplikasi",
+        "ok": false
+      },
+      {
+        "t": "Ukuran layar HP",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "medium",
+    "q": "Kenapa VPN membantu privasi saat memakai Wi-Fi publik?",
+    "exp": "VPN mengenkripsi lalu lintas data sehingga lebih sulit disadap.",
+    "c": [
+      {
+        "t": "Mengenkripsi lalu lintas data sehingga lebih sulit disadap",
+        "ok": true
+      },
+      {
+        "t": "Mempercepat kuota internet",
+        "ok": false
+      },
+      {
+        "t": "Menghapus riwayat pencarian otomatis",
+        "ok": false
+      },
+      {
+        "t": "Mengganti nama perangkat",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "medium",
+    "q": "Apa itu \"social engineering\" dalam keamanan siber?",
+    "exp": "Social engineering memanipulasi psikologis korban agar memberi info rahasia.",
+    "c": [
+      {
+        "t": "Manipulasi psikologis agar korban memberi info rahasia",
+        "ok": true
+      },
+      {
+        "t": "Membangun jaringan sosial online",
+        "ok": false
+      },
+      {
+        "t": "Jenis firewall khusus",
+        "ok": false
+      },
+      {
+        "t": "Teknik desain aplikasi",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "medium",
+    "q": "Ada telepon mengaku \"IT support\" minta akses jarak jauh ke laptop kantor tanpa prosedur resmi. Apa yang benar?",
+    "exp": "Sebaiknya menolak dan memverifikasi lewat jalur resmi perusahaan.",
+    "c": [
+      {
+        "t": "Menolak dan memverifikasi lewat jalur resmi perusahaan",
+        "ok": true
+      },
+      {
+        "t": "Langsung memberi akses supaya cepat selesai",
+        "ok": false
+      },
+      {
+        "t": "Memberikan password email juga",
+        "ok": false
+      },
+      {
+        "t": "Mematikan laptop tanpa laporan",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "medium",
+    "q": "Kenapa penting logout akun setelah memakai komputer bersama (warnet/komputer kantor bersama)?",
+    "exp": "Logout mencegah orang berikutnya mengakses akun kita.",
+    "c": [
+      {
+        "t": "Supaya orang berikutnya tidak bisa mengakses akun kita",
+        "ok": true
+      },
+      {
+        "t": "Supaya komputer lebih cepat",
+        "ok": false
+      },
+      {
+        "t": "Supaya baterai lebih awet",
+        "ok": false
+      },
+      {
+        "t": "Tidak ada gunanya",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "medium",
+    "q": "\"Juice jacking\" adalah risiko keamanan yang berkaitan dengan...",
+    "exp": "Juice jacking berisiko lewat port USB publik yang disusupi untuk mencuri data.",
+    "c": [
+      {
+        "t": "Mengisi daya HP di port USB publik yang bisa disusupi",
+        "ok": true
+      },
+      {
+        "t": "Memakai headset Bluetooth",
+        "ok": false
+      },
+      {
+        "t": "Mengganti kartu SIM",
+        "ok": false
+      },
+      {
+        "t": "Update aplikasi otomatis",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "medium",
+    "q": "Dapat email dengan lampiran .exe atau .scr dari pengirim tak dikenal. Apa yang tepat?",
+    "exp": "Lampiran dari pengirim tak dikenal berformat .exe/.scr berisiko malware.",
+    "c": [
+      {
+        "t": "Tidak dibuka karena berisiko malware",
+        "ok": true
+      },
+      {
+        "t": "Dibuka langsung karena penasaran",
+        "ok": false
+      },
+      {
+        "t": "Diteruskan ke rekan kerja",
+        "ok": false
+      },
+      {
+        "t": "Disimpan di desktop tanpa dicek",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "medium",
+    "q": "Kenapa penting membatasi info pribadi (alamat, jadwal harian) di media sosial?",
+    "exp": "Mengurangi risiko info tersebut disalahgunakan untuk penipuan/kejahatan.",
+    "c": [
+      {
+        "t": "Mengurangi risiko disalahgunakan untuk penipuan atau kejahatan",
+        "ok": true
+      },
+      {
+        "t": "Supaya followers bertambah",
+        "ok": false
+      },
+      {
+        "t": "Supaya baterai HP awet",
+        "ok": false
+      },
+      {
+        "t": "Tidak berpengaruh apa-apa",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "medium",
+    "q": "Apa manfaat aplikasi antivirus yang aktif dan terupdate?",
+    "exp": "Antivirus membantu mendeteksi dan memblokir program berbahaya.",
+    "c": [
+      {
+        "t": "Membantu mendeteksi dan memblokir program berbahaya",
+        "ok": true
+      },
+      {
+        "t": "Mempercepat pengisian baterai",
+        "ok": false
+      },
+      {
+        "t": "Menambah kapasitas penyimpanan",
+        "ok": false
+      },
+      {
+        "t": "Mengganti tampilan HP",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "medium",
+    "q": "Wi-Fi rumah tiba-tiba lemot dan ada banyak perangkat asing terhubung. Langkah pertama yang tepat?",
+    "exp": "Segera ganti password Wi-Fi dan periksa daftar perangkat yang terhubung.",
+    "c": [
+      {
+        "t": "Ganti password Wi-Fi segera dan periksa daftar perangkat terhubung",
+        "ok": true
+      },
+      {
+        "t": "Membiarkannya karena tidak masalah",
+        "ok": false
+      },
+      {
+        "t": "Membeli router baru tanpa mengecek dulu",
+        "ok": false
+      },
+      {
+        "t": "Mematikan internet selamanya",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "medium",
+    "q": "Kenapa sebaiknya mematikan Bluetooth/Wi-Fi saat tidak dipakai di tempat umum?",
+    "exp": "Mengurangi risiko perangkat disusupi lewat koneksi nirkabel yang selalu aktif.",
+    "c": [
+      {
+        "t": "Mengurangi risiko perangkat disusupi lewat koneksi yang selalu aktif",
+        "ok": true
+      },
+      {
+        "t": "Supaya HP terlihat baru",
+        "ok": false
+      },
+      {
+        "t": "Supaya sinyal seluler hilang",
+        "ok": false
+      },
+      {
+        "t": "Tidak ada manfaatnya",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "medium",
+    "q": "Apa itu firewall secara sederhana?",
+    "exp": "Firewall menyaring lalu lintas data untuk memblokir akses tidak sah.",
+    "c": [
+      {
+        "t": "Sistem penyaring lalu lintas data untuk memblokir akses tidak sah",
+        "ok": true
+      },
+      {
+        "t": "Aplikasi edit foto",
+        "ok": false
+      },
+      {
+        "t": "Alat pengisi daya cepat",
+        "ok": false
+      },
+      {
+        "t": "Fitur mempercantik layar kunci",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "hard",
+    "q": "Kenapa jaringan Wi-Fi kantor sebaiknya dipisah antara karyawan dan tamu/perangkat IoT?",
+    "exp": "Pemisahan jaringan membatasi dampak jika satu segmen berhasil diretas.",
+    "c": [
+      {
+        "t": "Supaya dampak serangan di satu segmen tidak menyebar ke seluruh sistem",
+        "ok": true
+      },
+      {
+        "t": "Supaya harga langganan internet lebih murah",
+        "ok": false
+      },
+      {
+        "t": "Supaya semua perangkat memakai IP yang sama",
+        "ok": false
+      },
+      {
+        "t": "Tidak ada manfaat keamanan sama sekali",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "hard",
+    "q": "Serangan \"man-in-the-middle\" pada Wi-Fi publik terjadi ketika...",
+    "exp": "Pelaku menyadap/menyisip di antara komunikasi pengguna dan jaringan tanpa disadari korban.",
+    "c": [
+      {
+        "t": "Pelaku menyadap komunikasi antara pengguna dan jaringan tanpa disadari",
+        "ok": true
+      },
+      {
+        "t": "Router mengalami kerusakan fisik",
+        "ok": false
+      },
+      {
+        "t": "Pengguna lupa password Wi-Fi",
+        "ok": false
+      },
+      {
+        "t": "Aplikasi kehabisan kuota",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "hard",
+    "q": "Kenapa kode dari aplikasi authenticator dianggap lebih aman dibanding OTP lewat SMS?",
+    "exp": "Aplikasi authenticator lebih tahan terhadap serangan SIM swap yang membajak nomor telepon korban.",
+    "c": [
+      {
+        "t": "Lebih tahan terhadap serangan SIM swap yang membajak nomor telepon",
+        "ok": true
+      },
+      {
+        "t": "Karena tidak perlu password sama sekali",
+        "ok": false
+      },
+      {
+        "t": "Karena kodenya tidak pernah berubah",
+        "ok": false
+      },
+      {
+        "t": "Karena tidak membutuhkan HP",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "hard",
+    "q": "Apa risiko utama jika firmware router tidak pernah diupdate?",
+    "exp": "Celah keamanan lama pada firmware tetap terbuka dan bisa dieksploitasi.",
+    "c": [
+      {
+        "t": "Celah keamanan lama tetap terbuka dan bisa dieksploitasi",
+        "ok": true
+      },
+      {
+        "t": "Router jadi lebih hemat listrik",
+        "ok": false
+      },
+      {
+        "t": "Sinyal Wi-Fi otomatis lebih kuat",
+        "ok": false
+      },
+      {
+        "t": "Tidak ada risiko sama sekali",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "hard",
+    "q": "Kenapa mematikan fitur WPS (Wi-Fi Protected Setup) pada router disarankan?",
+    "exp": "WPS punya kerentanan yang memudahkan PIN-nya ditebak paksa (brute force).",
+    "c": [
+      {
+        "t": "WPS punya kerentanan yang memudahkan PIN-nya ditebak paksa",
+        "ok": true
+      },
+      {
+        "t": "WPS membuat kuota internet lebih boros",
+        "ok": false
+      },
+      {
+        "t": "WPS memperlambat semua perangkat",
+        "ok": false
+      },
+      {
+        "t": "WPS hanya fitur dekoratif tanpa fungsi",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "hard",
+    "q": "Apa itu \"SIM swap\" sebagai ancaman keamanan?",
+    "exp": "SIM swap adalah penipu mengambil alih nomor HP korban lewat provider agar bisa menerima OTP korban.",
+    "c": [
+      {
+        "t": "Penipu mengambil alih nomor HP korban lewat provider untuk menerima OTP",
+        "ok": true
+      },
+      {
+        "t": "Mengganti kartu SIM karena rusak fisik di konter resmi",
+        "ok": false
+      },
+      {
+        "t": "Fitur bertukar nomor sesama teman secara sah",
+        "ok": false
+      },
+      {
+        "t": "Upgrade jaringan dari 4G ke 5G",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "hard",
+    "q": "Dalam prinsip backup 3-2-1, maksud angka \"1\" adalah...",
+    "exp": "Minimal satu salinan backup disimpan di lokasi terpisah (offsite).",
+    "c": [
+      {
+        "t": "Minimal satu salinan backup disimpan di lokasi terpisah",
+        "ok": true
+      },
+      {
+        "t": "Hanya boleh punya satu file saja",
+        "ok": false
+      },
+      {
+        "t": "Backup dilakukan sekali seumur hidup",
+        "ok": false
+      },
+      {
+        "t": "Hanya butuh satu jenis perangkat penyimpanan",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "hard",
+    "q": "Kenapa enkripsi penuh perangkat (full-disk encryption) penting jika laptop/HP hilang?",
+    "exp": "Data tetap sulit dibaca orang lain meski penyimpanan diambil paksa.",
+    "c": [
+      {
+        "t": "Data tetap sulit dibaca orang lain meski penyimpanan diambil paksa",
+        "ok": true
+      },
+      {
+        "t": "Supaya baterai lebih awet",
+        "ok": false
+      },
+      {
+        "t": "Supaya perangkat lebih ringan",
+        "ok": false
+      },
+      {
+        "t": "Supaya Wi-Fi otomatis tersambung",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "hard",
+    "q": "Kenapa prinsip \"least privilege\" (akses seminimal yang dibutuhkan) penting untuk keamanan kantor?",
+    "exp": "Membatasi dampak jika satu akun karyawan berhasil diretas.",
+    "c": [
+      {
+        "t": "Membatasi dampak jika satu akun karyawan berhasil diretas",
+        "ok": true
+      },
+      {
+        "t": "Supaya semua orang bisa mengakses semua data dengan mudah",
+        "ok": false
+      },
+      {
+        "t": "Supaya laporan HRD lebih cepat selesai",
+        "ok": false
+      },
+      {
+        "t": "Tidak berkaitan dengan keamanan sama sekali",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "d": "hard",
+    "q": "Apa perbedaan mendasar WPA2-Personal dan WPA2-Enterprise pada Wi-Fi kantor?",
+    "exp": "Enterprise memakai autentikasi per-pengguna (misalnya lewat server), bukan satu password bersama.",
+    "c": [
+      {
+        "t": "Enterprise memakai autentikasi per-pengguna, bukan satu password bersama",
+        "ok": true
+      },
+      {
+        "t": "Enterprise hanya untuk router lebih mahal tanpa perbedaan fungsi",
+        "ok": false
+      },
+      {
+        "t": "Personal lebih aman dibanding Enterprise",
+        "ok": false
+      },
+      {
+        "t": "Tidak ada perbedaan sama sekali",
+        "ok": false
+      }
+    ]
+  }
+]
